@@ -16,9 +16,9 @@ management:
 
 spring:
   datasource:
-    url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:5431}/${POSTGRES.DATABASE:skeleton}
+    url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:5432}/${POSTGRES.DATABASE:skeleton}
     username: ${POSTGRES.USER:postgres}
-    password: ${POSTGRES.PASSWORD:111111}
+    password: ${POSTGRES.PASSWORD:password}
     hikari:
       connectionTimeout: ${DATASOURCE.CONNECTION.TIMEOUT:30000}
       idleTimeout: ${DATASOURCE.IDLE.TIMEOUT:600000}
@@ -31,6 +31,8 @@ spring:
     properties:
       hibernate:
         format_sql: ${FORMAT_SQL:false}
+    hibernate:
+      ddl-auto: create-drop
   flyway:
     baselineOnMigrate: ${FLYWAY.BASE_LINE_ON_MIGRATE:true}
     baselineVersion: ${FLYWAY.BASE_LINE_VERSION:0}
