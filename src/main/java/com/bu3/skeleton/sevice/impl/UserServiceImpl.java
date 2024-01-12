@@ -13,5 +13,8 @@ public class UserServiceImpl implements IUserService {
 
     private final IUserRepo userRepo;
 
+    @Override
+    public void addUser() {
 
+    }
 }
