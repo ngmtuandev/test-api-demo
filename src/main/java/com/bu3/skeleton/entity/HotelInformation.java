@@ -32,5 +32,4 @@ public class HotelInformation extends BaseEntity {
 
     private String description;
 
-    private String status;
 }

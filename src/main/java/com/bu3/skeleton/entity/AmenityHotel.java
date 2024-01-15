@@ -25,6 +25,8 @@ public class AmenityHotel extends BaseEntity {
 
     private String parentId;
 
+    private String languageCode;
+
     private Boolean isDeleted;
 
     private String description;

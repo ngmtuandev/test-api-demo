@@ -22,6 +22,8 @@ public class ContactHotel extends BaseEntity {
 
     private String parentId;
 
+    private String languageCode;
+
     private String customerName;
 
     private String phoneNumber;

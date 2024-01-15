@@ -22,6 +22,8 @@ public class HotelPolicy extends BaseEntity {
 
     private String parentId;
 
+    private String languageCode;
+
     private String policy;
 
     private String typeCancelPolicy;

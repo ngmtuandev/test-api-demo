@@ -15,6 +15,18 @@ management:
         prometheus: /prometheus/metrics
 
 spring:
+  # Config mail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: staying.booking.online@gmail.com
+    password: cfoarjgkprvmvgvx
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:5432}/${POSTGRES.DATABASE:skeleton}
     username: ${POSTGRES.USER:postgres}
@@ -31,8 +43,10 @@ spring:
     properties:
       hibernate:
         format_sql: ${FORMAT_SQL:true}
+        use_nationalized_character_data: true
+        enable_lazy_load_no_trans: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
   flyway:
     baselineOnMigrate: ${FLYWAY.BASE_LINE_ON_MIGRATE:true}
     baselineVersion: ${FLYWAY.BASE_LINE_VERSION:0}
@@ -48,3 +62,7 @@ internal-url:
 
 secret:
   key: ${secret.key:6KGMeQrk6AGC6xJMBeqWwkY/udp6ALKljw5RTHevYlhutlKMrG4/qnIsaq5G46BJ}
+
+redis:
+  host: localhost
+  port: 6379

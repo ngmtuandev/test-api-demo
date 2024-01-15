@@ -19,6 +19,8 @@ public class Location extends BaseEntity {
 
     private String parentId;
 
+    private String languageCode;
+
     private String locationName;
 
     private String status;

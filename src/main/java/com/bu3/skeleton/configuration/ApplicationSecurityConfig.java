@@ -1,5 +1,6 @@
 package com.bu3.skeleton.configuration;
 
+import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ public class ApplicationSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(SystemConstant.API_PERMISSION_GROUP + SystemConstant.VERSION_1).hasAuthority("ADMIN:MASTER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

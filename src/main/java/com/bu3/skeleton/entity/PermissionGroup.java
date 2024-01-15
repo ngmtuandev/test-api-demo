@@ -18,7 +18,7 @@ import java.util.List;
 public class PermissionGroup extends BaseEntity {
 
     private String permissionGroupName;
-    private Boolean isDelete;
+    private Boolean isDeleted;
     private String description;
 
     @OneToMany(mappedBy = "permissionGroup")

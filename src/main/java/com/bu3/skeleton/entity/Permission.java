@@ -17,6 +17,8 @@ public class Permission extends BaseEntity {
 
     private String permissionCode;
 
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "permission_group_id")
     private PermissionGroup permissionGroup;
