@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "_hotel_image")
-@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class HotelImage {
 
@@ -27,18 +25,18 @@ public class HotelImage {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    @ManyToOne
-    @JoinColumn(name = "hotel_id")
-    private Hotel hotel;
-    @Column
-    private String imageName;
-    @Column
-    private String type;
-    @Column(length = 5000000)
-    private byte[] picByte;
-    @Column
+
+    private String name;
+
+    @Lob
+    private byte[] data;
+
     @CreatedDate
     private LocalDateTime uploadDate;
 
     private Boolean isDeleted;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", referencedColumnName = "id")
+    private Hotel hotel;
 }

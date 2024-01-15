@@ -49,6 +49,7 @@ internal-url:
   configuration-service:
 
 secret:
+<<<<<<< HEAD
   key: ${secret.key:6KGMeQrk6AGC6xJMBeqWwkY/udp6ALKljw5RTHevYlhutlKMrG4/qnIsaq5G46BJ}
 
   # Config mail
@@ -67,3 +68,6 @@ secret:
 redis:
   host: localhost
   port: 6379
+=======
+  key: ${secret.key:6KGMeQrk6AGC6xJMBeqWwkY/udp6ALKljw5RTHevYlhutlKMrG4/qnIsaq5G46BJ}
+>>>>>>> 0b40b98d4549c6d823c0ba7831070932a4f6b7d4
