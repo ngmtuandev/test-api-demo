@@ -31,6 +31,8 @@ public class User extends BaseEntity implements UserDetails {
 
     private LocalDate dateOfBirt;
 
+    private String gender;
+
     private String fullName;
 
     private String phoneNumber;

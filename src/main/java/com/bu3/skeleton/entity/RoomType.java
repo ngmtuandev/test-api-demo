@@ -4,8 +4,10 @@ import com.bu3.skeleton.enums.Language;
 import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,13 +18,16 @@ import java.util.List;
 @Entity
 public class RoomType{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+
     private String name;
 
     @Enumerated(EnumType.STRING)
     private Language languageCode;
-
-    @OneToMany(mappedBy = "roomType")
-    private List<Room> rooms;
 }

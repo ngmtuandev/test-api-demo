@@ -1,11 +1,13 @@
 package com.bu3.skeleton.entity;
 
+import com.bu3.skeleton.enums.HotelStatus;
 import com.bu3.skeleton.util.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,14 +15,25 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "_hotel")
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class Hotel extends BaseEntity {
 
-    private String parentId;
+    private Integer star;
 
-    private Double rating;
+    private BigDecimal price;
 
-    private BigDecimal priceBase;
+    private HotelStatus status;
 
-    private String status;
+    @OneToOne(mappedBy = "hotel")
+    private HotelContact hotelContact;
+
+    @OneToMany(mappedBy = "hotel")
+    private List<HotelImage> hotelImages;
+
+    @OneToMany(mappedBy = "hotel")
+    private List<HotelInfo> hotelInfos;
+
+    @OneToMany(mappedBy = "hotel")
+    private List<Room> rooms;
 }

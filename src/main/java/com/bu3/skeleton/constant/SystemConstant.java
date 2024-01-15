@@ -10,4 +10,6 @@ public class SystemConstant {
     public static final String SEND_MAIL = "/send-mail";
 
     public static final String USER_ACTIVE = "active";
+    public static final String USER_NO_ACTIVE = "no active";
+    public static final String API_USER = "/user";
 }

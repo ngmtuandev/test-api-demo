@@ -1,9 +1,11 @@
 package com.bu3.skeleton.entity;
 
+import com.bu3.skeleton.enums.RoomStatus;
 import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,27 +15,29 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "_room")
 @Entity
 public class Room extends BaseEntity {
+    private Integer quantityRoom;
+    private BigDecimal price;
     private Double acreage;
     private Integer capacity;
-    private Integer quantity; //tong so phong
-    private BigDecimal price;
     private Integer adultQuantity;
     private Integer childrenQuantity;
+    private Integer extraBedQuantity;
     private Integer singleBedQuantity;
     private Integer twinBedQuantity;
-    private Integer subBedQuantity;
+    private RoomStatus status;
 
-    @OneToOne
-    @JoinColumn(name = "room_id", referencedColumnName = "id")
-    private RoomInfo roomInfo;
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", referencedColumnName = "id")
+    private Hotel hotel;
+
+    @OneToMany(mappedBy = "room")
+    private List<RoomInfo> roomInfos;
 
     @OneToMany(mappedBy = "room")
     private List<RoomImage> roomImages;
 
-    @ManyToOne
-    @JoinColumn(name = "room_type_id", referencedColumnName = "id")
-    private RoomType roomType;
 }
