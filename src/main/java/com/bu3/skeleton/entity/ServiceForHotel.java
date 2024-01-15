@@ -1,11 +1,11 @@
 package com.bu3.skeleton.entity;
 
+import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import java.time.LocalDateTime;
+
 import java.util.UUID;
 
 @Getter
@@ -13,10 +13,9 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "_hotel_image")
+@Table(name = "_service_for_hotel")
 @Entity
-public class HotelImage {
-
+public class ServiceForHotel {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -26,17 +25,11 @@ public class HotelImage {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    private String name;
-
-    @Lob
-    private byte[] data;
-
-    @CreatedDate
-    private LocalDateTime uploadDate;
-
-    private Boolean isDeleted;
+    @ManyToOne
+    @JoinColumn(name = "hotel_info_id")
+    private HotelInfo hotelInfo;
 
     @ManyToOne
-    @JoinColumn(name = "hotel_id", referencedColumnName = "id")
-    private Hotel hotel;
+    @JoinColumn(name = "hotel_service_catalog_id")
+    private HotelServiceCatalog hotelServiceCatalog;
 }

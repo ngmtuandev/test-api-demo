@@ -1,11 +1,13 @@
 package com.bu3.skeleton.entity;
 
+import com.bu3.skeleton.enums.HotelServiceCatalogType;
+import com.bu3.skeleton.enums.Language;
+import com.bu3.skeleton.enums.RoomServiceCatalogType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import java.time.LocalDateTime;
+
 import java.util.UUID;
 
 @Getter
@@ -13,9 +15,9 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "_hotel_image")
+@Table(name = "_room_service_catalog")
 @Entity
-public class HotelImage {
+public class RoomServiceCatalog {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -25,18 +27,10 @@ public class HotelImage {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-
     private String name;
 
-    @Lob
-    private byte[] data;
-
-    @CreatedDate
-    private LocalDateTime uploadDate;
-
+    @Enumerated(EnumType.STRING)
+    private RoomServiceCatalogType type;
     private Boolean isDeleted;
-
-    @ManyToOne
-    @JoinColumn(name = "hotel_id", referencedColumnName = "id")
-    private Hotel hotel;
+    private Language languageCode;
 }

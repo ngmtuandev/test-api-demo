@@ -1,10 +1,11 @@
 package com.bu3.skeleton.entity;
 
+import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,9 +14,9 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "_hotel_image")
+@Table(name = "_room_image")
 @Entity
-public class HotelImage {
+public class RoomImage extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -37,6 +38,6 @@ public class HotelImage {
     private Boolean isDeleted;
 
     @ManyToOne
-    @JoinColumn(name = "hotel_id", referencedColumnName = "id")
-    private Hotel hotel;
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
+    private Room room;
 }

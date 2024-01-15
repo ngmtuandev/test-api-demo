@@ -1,9 +1,9 @@
 package com.bu3.skeleton.repository;
 
-import com.bu3.skeleton.entity.AmenityHotel;
+import com.bu3.skeleton.entity.HotelContact;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface IAmenityHotelRepo extends JpaRepository<AmenityHotel, UUID> {
+public interface IHotelContactRepo extends JpaRepository<HotelContact, UUID> {
 }

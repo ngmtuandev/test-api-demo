@@ -18,8 +18,8 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements IJwtService {
 
-    @Value("${secret.key}")
-    private String SECRET_KEY;
+//    @Value("${secret.key}")
+    private String SECRET_KEY = "hh";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
