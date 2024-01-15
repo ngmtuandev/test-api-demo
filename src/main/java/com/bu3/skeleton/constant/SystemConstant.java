@@ -17,6 +17,8 @@ public class SystemConstant {
     // Role
     public static final String API_ROLE = "/role";
 
+    public static final String ROLE_ACTIVE = "active";
+
     // UserRole
     public static final String API_USER_ROLE = "/user-role";
 

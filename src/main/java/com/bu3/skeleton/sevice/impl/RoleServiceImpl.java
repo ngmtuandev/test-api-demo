@@ -1,9 +1,11 @@
 package com.bu3.skeleton.sevice.impl;
 
+import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.dto.RoleDto;
 import com.bu3.skeleton.dto.request.RoleRequest;
 import com.bu3.skeleton.entity.Role;
 import com.bu3.skeleton.exception.ResourceDuplicateException;
+import com.bu3.skeleton.exception.ResourceNotFoundException;
 import com.bu3.skeleton.mapper.RoleDtoMapper;
 import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.sevice.IRoleService;
@@ -32,13 +34,29 @@ public class RoleServiceImpl implements IRoleService {
                 Role.builder()
                         .roleName(request.getRoleName())
                         .roleCode(request.getRoleCode())
+                        .status(SystemConstant.ROLE_ACTIVE)
                         .build()
         );
     }
 
     @Override
     public void updateRole(RoleRequest request) {
+        Role role = roleRepo.findRoleByRoleName(request.getRoleName())
+                .orElseThrow(() -> new ResourceNotFoundException("find role by role name: " + request.getRoleName() + " not found!"));
 
+        if (roleRepo.existsByRoleName(request.getRoleName())) {
+            throw new ResourceDuplicateException("roleName exists");
+        }
+
+        if (!role.getRoleName().equals(request.getRoleName())) {
+            role.setRoleName(request.getRoleName());
+        }
+
+        if (!role.getRoleCode().equals(request.getRoleCode())) {
+            role.setRoleCode(request.getRoleCode());
+        }
+
+        roleRepo.save(role);
     }
 
     @Override

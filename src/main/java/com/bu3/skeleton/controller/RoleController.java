@@ -34,4 +34,14 @@ public class RoleController {
     public ResponseEntity<List<RoleDto>> findAllRole() {
         return new ResponseEntity<>(roleService.findAllRole(), HttpStatus.OK);
     }
+
+    @PutMapping
+    public ResponseEntity<?> updateRole(
+            @Validated @RequestBody RoleRequest request,
+            Errors errors
+    ) {
+        validationService.handleValidate(errors);
+        roleService.updateRole(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
