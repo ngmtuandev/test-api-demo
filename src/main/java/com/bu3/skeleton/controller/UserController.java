@@ -30,7 +30,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody UserAddRequest request) {
+    public ResponseEntity<?> addUser(
+            @Validated @RequestBody UserAddRequest request,
+            Errors errors
+    ) {
+        validationService.handleValidate(errors);
         userService.addUser(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

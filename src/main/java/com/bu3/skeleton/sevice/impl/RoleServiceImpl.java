@@ -37,6 +37,11 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     @Override
+    public void updateRole(RoleRequest request) {
+
+    }
+
+    @Override
     public List<RoleDto> findAllRole() {
         List<Role> all = roleRepo.findAll();
 

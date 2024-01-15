@@ -38,6 +38,7 @@ public class ApplicationSecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(SystemConstant.API_PERMISSION_GROUP + SystemConstant.VERSION_1).hasAuthority("ADMIN:MASTER")
+                        .requestMatchers(SystemConstant.API_ROLE + SystemConstant.VERSION_1 + "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public interface IRoleRepo extends JpaRepository<Role, UUID> {
 
+    boolean existsByRoleNameNot(String roleName);
+
     boolean existsByRoleName(String roleName);
 
     Optional<Role> findRoleByRoleName(String roleName);

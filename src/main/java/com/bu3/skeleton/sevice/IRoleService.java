@@ -9,5 +9,7 @@ public interface IRoleService {
 
     void addRole(RoleRequest request);
 
+    void updateRole(RoleRequest request);
+
     List<RoleDto> findAllRole();
 }
