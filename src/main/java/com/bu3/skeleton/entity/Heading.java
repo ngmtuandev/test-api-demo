@@ -4,7 +4,11 @@ import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -13,7 +17,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "_heading")
+@Table(name = "'heading'")
 @Entity
 public class Heading extends BaseEntity {
 

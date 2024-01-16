@@ -1,6 +1,7 @@
 package com.bu3.skeleton.configuration;
 
 import com.bu3.skeleton.constant.SystemConstant;
+import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.repository.IUserRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -33,7 +34,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> userRepo.findUserByEmailAndStatus(email, SystemConstant.USER_ACTIVE)
-                .orElseThrow(() -> new UsernameNotFoundException("email not found!.."));
+                .orElseThrow(() -> new UsernameNotFoundException(Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
     }
 
     @Bean

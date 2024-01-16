@@ -2,10 +2,16 @@ package com.bu3.skeleton.entity;
 
 import com.bu3.skeleton.enums.RoomStatus;
 import com.bu3.skeleton.util.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,8 +21,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "_room")
+@Table(name = "'room'")
 @Entity
 public class Room extends BaseEntity {
     private Integer quantityRoom;

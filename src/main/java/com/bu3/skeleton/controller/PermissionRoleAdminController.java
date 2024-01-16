@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(SystemConstant.API_PERMISSION_ROLE + SystemConstant.VERSION_1)
+@RequestMapping(SystemConstant.API_ADMIN + SystemConstant.VERSION_1 + SystemConstant.API_PERMISSION_ROLE)
 @RequiredArgsConstructor
-public class PermissionRoleController {
+public class PermissionRoleAdminController {
 
     private final IPermissionRoleService permissionRoleService;
 
