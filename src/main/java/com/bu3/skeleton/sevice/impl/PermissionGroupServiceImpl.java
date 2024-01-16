@@ -1,6 +1,8 @@
 package com.bu3.skeleton.sevice.impl;
 
+import com.bu3.skeleton.configuration.Translator;
 import com.bu3.skeleton.constant.SystemConstant;
+import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionGroupDto;
 import com.bu3.skeleton.dto.request.PermissionGroupRequest;
 import com.bu3.skeleton.entity.PermissionGroup;
@@ -37,7 +39,7 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
     @Override
     public void addPermissionGroup(PermissionGroupRequest request) {
         if (permissionGroupRepo.existsByPermissionGroupName(request.getPermissionGroupName())) {
-            throw new ResourceDuplicateException("duplicated name permission group : " + request.getPermissionGroupName());
+            throw new ResourceDuplicateException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
         }
 
         permissionGroupRepo.save(

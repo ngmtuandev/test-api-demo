@@ -1,6 +1,8 @@
 package com.bu3.skeleton.sevice.impl;
 
+import com.bu3.skeleton.configuration.Translator;
 import com.bu3.skeleton.constant.SystemConstant;
+import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.UserAddRequest;
 import com.bu3.skeleton.dto.request.UserLoginRequest;
@@ -43,7 +45,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void addUser(UserAddRequest request) {
         if (userRepo.existsByEmail(request.getEmail())) {
-            throw new ResourceDuplicateException("duplicate!");
+            throw new ResourceDuplicateException(Translator.toLocale(TransitionCode.EMAIL_DUPLICATE));
         }
 
         userRepo.save(
@@ -79,7 +81,7 @@ public class UserServiceImpl implements IUserService {
         );
 
         User user = userRepo.findUserByEmailAndStatus(request.getEmail(), SystemConstant.USER_ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException("user not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
 
         UserDto userDto = userDtoMapper.apply(user);
         var jwtToken = jwtService.generateToken(user);

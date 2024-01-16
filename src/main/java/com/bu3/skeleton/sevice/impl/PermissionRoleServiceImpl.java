@@ -1,5 +1,7 @@
 package com.bu3.skeleton.sevice.impl;
 
+import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.request.PermissionRoleRequest;
 import com.bu3.skeleton.entity.Permission;
 import com.bu3.skeleton.entity.PermissionRole;
@@ -27,10 +29,10 @@ public class PermissionRoleServiceImpl implements IPermissionRoleService {
     @Override
     public void addPermissionRole(PermissionRoleRequest request) {
         Role role = roleRepo.findRoleByRoleName(request.getRoleName())
-                .orElseThrow(() -> new ResourceNotFoundException("role not found!."));
+                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
 
         Permission permission = permissionRepo.findPermissionByPermissionCode(request.getPermissionCode())
-                .orElseThrow(() -> new ResourceNotFoundException("permission not found!."));
+                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.PERMISSION_FIND_NOT_FOUND)));
 
         permissionRoleRepo.save(
                 PermissionRole.builder()

@@ -1,5 +1,7 @@
 package com.bu3.skeleton.sevice.impl;
 
+import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionDto;
 import com.bu3.skeleton.dto.request.PermissionRequest;
 import com.bu3.skeleton.entity.Permission;
@@ -29,7 +31,7 @@ public class PermissionServiceImpl implements IPermissionService {
     @Override
     public void addPermission(PermissionRequest request) {
         PermissionGroup permissionGroup = permissionGroupRepo.findById(request.getPermissionGroupId())
-                .orElseThrow(() -> new ApiRequestException("permission group find by id not found!.."));
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_FIND_BY_ID_NOT_FOUND)));
 
         permissionRepo.save(
                 Permission.builder()

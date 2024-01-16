@@ -37,9 +37,7 @@ public class ApplicationSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(SystemConstant.API_PERMISSION_GROUP + SystemConstant.VERSION_1).hasAuthority("ADMIN:MASTER")
-                        .requestMatchers(SystemConstant.API_ROLE + SystemConstant.VERSION_1 + "/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(SystemConstant.API_PUBLIC).permitAll()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

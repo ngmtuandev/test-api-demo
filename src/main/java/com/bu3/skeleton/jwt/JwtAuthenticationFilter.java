@@ -1,5 +1,6 @@
 package com.bu3.skeleton.jwt;
 
+import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.repository.ITokenRepo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,10 +34,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(SystemConstant.AUTHORIZATION);
         final String jwt;
         final String username;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith(SystemConstant.BEARER)) {
             filterChain.doFilter(request, response);
             return;
         }
