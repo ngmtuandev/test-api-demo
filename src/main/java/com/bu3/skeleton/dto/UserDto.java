@@ -24,4 +24,6 @@ public class UserDto {
     private String address;
 
     private String status;
+
+    private String jwtToken;
 }

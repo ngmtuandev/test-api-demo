@@ -1,12 +1,20 @@
 package com.bu3.skeleton.entity;
 
 import com.bu3.skeleton.enums.Language;
-import com.bu3.skeleton.util.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Column;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,9 +22,9 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "_room_type")
+@Table(name = "'room_type'")
 @Entity
-public class RoomType{
+public class RoomType {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(

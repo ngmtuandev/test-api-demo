@@ -3,10 +3,13 @@ package com.bu3.skeleton.entity;
 import com.bu3.skeleton.enums.PaymentStatus;
 import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Table;
-import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,8 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "_payment")
-@EntityListeners(AuditingEntityListener.class)
+@Table(name = "'payment'")
 @Entity
 public class Payment extends BaseEntity {
     private PaymentStatus status;

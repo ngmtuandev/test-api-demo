@@ -1,5 +1,6 @@
 package com.bu3.skeleton.util;
 
+import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.repository.ITokenRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,9 +21,9 @@ public class HandleLogoutUser implements LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(SystemConstant.AUTHORIZATION);
         final String jwt;
-        if (authHeader == null || !authHeader.startsWith("Bearer "))
+        if (authHeader == null || !authHeader.startsWith(SystemConstant.BEARER))
             return;
         jwt = authHeader.substring(7);
         var storedToken = tokenRepo.findByToken(jwt).orElse(null);

@@ -14,10 +14,11 @@ public class UserDtoMapper implements Function<User, UserDto> {
         return UserDto.builder()
                 .email(user.getEmail())
                 .gender(user.getGender())
-                .dateOfBirth(user.getDateOfBirt())
+                .dateOfBirth(user.getDateOfBirth())
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
                 .address(user.getAddress())
+                .status(user.getStatus())
                 .build();
     }
 }
