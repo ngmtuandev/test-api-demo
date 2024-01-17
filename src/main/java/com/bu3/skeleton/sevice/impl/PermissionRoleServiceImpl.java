@@ -6,7 +6,7 @@ import com.bu3.skeleton.dto.request.PermissionRoleRequest;
 import com.bu3.skeleton.entity.Permission;
 import com.bu3.skeleton.entity.PermissionRole;
 import com.bu3.skeleton.entity.Role;
-import com.bu3.skeleton.exception.ResourceNotFoundException;
+import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.repository.IPermissionRepo;
 import com.bu3.skeleton.repository.IPermissionRoleRepo;
 import com.bu3.skeleton.repository.IRoleRepo;
@@ -29,10 +29,12 @@ public class PermissionRoleServiceImpl implements IPermissionRoleService {
     @Override
     public void addPermissionRole(PermissionRoleRequest request) {
         Role role = roleRepo.findRoleByRoleName(request.getRoleName())
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
+                        Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
 
         Permission permission = permissionRepo.findPermissionByPermissionCode(request.getPermissionCode())
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.PERMISSION_FIND_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_CODE),
+                        Translator.toLocale(TransitionCode.PERMISSION_FIND_NOT_FOUND)));
 
         permissionRoleRepo.save(
                 PermissionRole.builder()

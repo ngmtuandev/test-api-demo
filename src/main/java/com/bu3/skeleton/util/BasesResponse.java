@@ -1,16 +1,14 @@
 package com.bu3.skeleton.util;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import java.awt.print.Pageable;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 public class BasesResponse<T> {
 
     private String code;
@@ -19,10 +17,10 @@ public class BasesResponse<T> {
 
     private List<T> data;
 
-    private Pageable meta;
+    private PageableResponse meta;
 
     private String message;
 
-    private TimeUnit responseTime;
+    private long responseTime;
 
 }

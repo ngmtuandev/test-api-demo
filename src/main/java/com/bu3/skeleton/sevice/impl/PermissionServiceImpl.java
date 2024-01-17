@@ -31,7 +31,8 @@ public class PermissionServiceImpl implements IPermissionService {
     @Override
     public void addPermission(PermissionRequest request) {
         PermissionGroup permissionGroup = permissionGroupRepo.findById(request.getPermissionGroupId())
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_FIND_BY_ID_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
+                        Translator.toLocale(TransitionCode.PERMISSION_GROUP_FIND_BY_ID_NOT_FOUND)));
 
         permissionRepo.save(
                 Permission.builder()

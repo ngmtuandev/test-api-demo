@@ -15,7 +15,7 @@ public class ValidationServiceImpl implements IValidationService {
             List<String> list = errors.getAllErrors().stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
                     .toList();
-            throw new ApiRequestException(list.toString());
+            throw new ApiRequestException("400", list.toString());
         }
     }
 }

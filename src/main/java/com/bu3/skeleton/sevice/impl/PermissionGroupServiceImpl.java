@@ -6,7 +6,7 @@ import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionGroupDto;
 import com.bu3.skeleton.dto.request.PermissionGroupRequest;
 import com.bu3.skeleton.entity.PermissionGroup;
-import com.bu3.skeleton.exception.ResourceDuplicateException;
+import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.PermissionGroupDtoMapper;
 import com.bu3.skeleton.repository.IPermissionGroupRepo;
 import com.bu3.skeleton.sevice.IPermissionGroupService;
@@ -39,7 +39,8 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
     @Override
     public void addPermissionGroup(PermissionGroupRequest request) {
         if (permissionGroupRepo.existsByPermissionGroupName(request.getPermissionGroupName())) {
-            throw new ResourceDuplicateException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
+            throw new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
+                    Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
         }
 
         permissionGroupRepo.save(

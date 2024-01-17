@@ -4,7 +4,9 @@ import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.UserAddRequest;
 import com.bu3.skeleton.dto.request.UserLoginRequest;
+import com.bu3.skeleton.dto.response.UsersResponse;
 import com.bu3.skeleton.sevice.IUserService;
+import com.bu3.skeleton.util.BasesResponse;
 import com.bu3.skeleton.validation.IValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,8 +31,8 @@ public class UserAdminController {
     private final IValidationService validationService;
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> findUsers() {
-        return new ResponseEntity<>(userService.findAllUser(), HttpStatus.OK);
+    public ResponseEntity<UsersResponse> findUsers() {
+        return new ResponseEntity<>(userService.findAllUser(1,2), HttpStatus.OK);
     }
 
     @PostMapping

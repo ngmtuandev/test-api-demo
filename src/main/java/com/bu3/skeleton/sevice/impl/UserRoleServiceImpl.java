@@ -8,7 +8,7 @@ import com.bu3.skeleton.dto.request.UserRoleRequest;
 import com.bu3.skeleton.entity.Role;
 import com.bu3.skeleton.entity.User;
 import com.bu3.skeleton.entity.UserRole;
-import com.bu3.skeleton.exception.ResourceNotFoundException;
+import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.UserRoleDtoMapper;
 import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.repository.IUserRepo;
@@ -36,10 +36,12 @@ public class UserRoleServiceImpl implements IUserRoleService {
     @Override
     public void addUserRole(UserRoleRequest request) {
         Role role = roleRepo.findRoleByRoleName(request.getRoleName())
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
+                        Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
 
         User user = userRepo.findUserByEmailAndStatus(request.getEmail(), SystemConstant.USER_ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.USER_CODE),
+                        Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
 
         userRoleRepo.save(
                 UserRole.builder()

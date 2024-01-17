@@ -6,8 +6,7 @@ import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.RoleDto;
 import com.bu3.skeleton.dto.request.RoleRequest;
 import com.bu3.skeleton.entity.Role;
-import com.bu3.skeleton.exception.ResourceDuplicateException;
-import com.bu3.skeleton.exception.ResourceNotFoundException;
+import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.RoleDtoMapper;
 import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.sevice.IRoleService;
@@ -29,7 +28,8 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public void addRole(RoleRequest request) {
         if (roleRepo.existsByRoleName(request.getRoleName())) {
-            throw new ResourceDuplicateException(Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
+            throw new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
+                    Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
         }
 
         roleRepo.save(
@@ -44,10 +44,12 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public void updateRole(RoleRequest request) {
         Role role = roleRepo.findRoleByRoleName(request.getRoleName())
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
+                        Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS)));
 
         if (roleRepo.existsByRoleName(request.getRoleName())) {
-            throw new ResourceDuplicateException(Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
+            throw new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
+                    Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
         }
 
         if (!role.getRoleName().equals(request.getRoleName())) {
