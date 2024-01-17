@@ -15,10 +15,22 @@ management:
         prometheus: /prometheus/metrics
 
 spring:
+  # Config mail
+  mail:
+    host: ${EMAIL.HOST:smtp.gmail.com}
+    port: ${EMAIL.PORT:587}
+    username: ${EMAIL.USERNAME:staying.booking.online@gmail.com}
+    password: ${EMAIL.PASSWORD:cfoarjgkprvmvgvx}
+    properties:
+      mail:
+        smtp:
+          auth: ${EMAIL.AUTH:true}
+          starttls:
+            enable: ${EMAIL.ENABLE:true}
   datasource:
-    url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:5431}/${POSTGRES.DATABASE:skeleton}
+    url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:5432}/${POSTGRES.DATABASE:skeleton}
     username: ${POSTGRES.USER:postgres}
-    password: ${POSTGRES.PASSWORD:111111}
+    password: ${POSTGRES.PASSWORD:password}
     hikari:
       connectionTimeout: ${DATASOURCE.CONNECTION.TIMEOUT:30000}
       idleTimeout: ${DATASOURCE.IDLE.TIMEOUT:600000}
@@ -27,10 +39,14 @@ spring:
       maximum-pool-size: ${DATASOURCE.MAXIMUM_POOL_SIZE:50}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: ${JPA.SHOW_SQL:false}
+    show-sql: ${JPA.SHOW_SQL:true}
     properties:
       hibernate:
-        format_sql: ${FORMAT_SQL:false}
+        format_sql: ${FORMAT_SQL:true}
+        use_nationalized_character_data: true
+        enable_lazy_load_no_trans: true
+    hibernate:
+      ddl-auto: create-drop
   flyway:
     baselineOnMigrate: ${FLYWAY.BASE_LINE_ON_MIGRATE:true}
     baselineVersion: ${FLYWAY.BASE_LINE_VERSION:0}
@@ -43,3 +59,14 @@ spring:
     database: ${REDIS_DATABASE:0}
 internal-url:
   configuration-service:
+
+SECRET:
+  KEY: ${SECRET.KEY:6KGMeQrk6AGC6xJMBeqWwkY/udp6ALKljw5RTHevYlhutlKMrG4/qnIsaq5G46BJ}
+
+redis:
+  host: localhost
+  port: 6379
+
+app:
+  baseName: skeleton
+  defaultLocate: en
