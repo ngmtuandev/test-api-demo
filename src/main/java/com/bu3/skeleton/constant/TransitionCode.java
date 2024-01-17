@@ -2,6 +2,8 @@ package com.bu3.skeleton.constant;
 
 public class TransitionCode {
 
+    public static final String NOT_FOUND = "not_found";
+
     public static final String PERMISSION_CODE = "permission_code";
     public static final String ROLE_CODE = "role_code";
     public static final String PERMISSION_ROLE_CODE = "permission_role_code";
@@ -24,7 +26,11 @@ public class TransitionCode {
     public static final String PERMISSION_GROUP_EXISTS = "permission_group_exists";
     public static final String PERMISSION_GROUP_FIND_BY_ID_NOT_FOUND = "permission_group_find_by_id_not_found";
 
+    public static final String PERMISSION_GROUP_FIND_SUCCESS = "permission_group_find_success";
+
     // Permission
     public static final String PERMISSION_FIND_NOT_FOUND = "permission_find_not_found";
+
+    public static final String PERMISSION_SUCCESS = "permission_success";
 
 }

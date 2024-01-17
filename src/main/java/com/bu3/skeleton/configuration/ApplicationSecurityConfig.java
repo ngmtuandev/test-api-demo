@@ -38,13 +38,12 @@ public class ApplicationSecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> requests
                         .anyRequest().permitAll()
-                        .requestMatchers(SystemConstant.API_PUBLIC).permitAll()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
-                        .logoutUrl("/api/user/logout")
+                        .logoutUrl(SystemConstant.API_ADMIN+SystemConstant.VERSION_1+SystemConstant.API_USER+SystemConstant.API_USER_LOGOUT).permitAll()
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );

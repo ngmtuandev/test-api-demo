@@ -15,5 +15,7 @@ public class PermissionGroupDto {
 
     private String permissionGroupName;
 
+    private Boolean isDeleted;
+
     private String description;
 }

@@ -4,22 +4,18 @@ import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.UserAddRequest;
 import com.bu3.skeleton.dto.request.UserLoginRequest;
+import com.bu3.skeleton.dto.request.UserUpdateRequest;
 import com.bu3.skeleton.dto.response.UsersResponse;
 import com.bu3.skeleton.sevice.IUserService;
-import com.bu3.skeleton.util.BasesResponse;
 import com.bu3.skeleton.validation.IValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(SystemConstant.API_ADMIN + SystemConstant.VERSION_1 + SystemConstant.API_USER)
@@ -31,8 +27,11 @@ public class UserAdminController {
     private final IValidationService validationService;
 
     @GetMapping
-    public ResponseEntity<UsersResponse> findUsers() {
-        return new ResponseEntity<>(userService.findAllUser(1,2), HttpStatus.OK);
+    public ResponseEntity<UsersResponse> findUsers(
+            @RequestParam(value = "current-page", required = false) Optional<Integer> currentPage,
+            @RequestParam(value = "limit-page", required = false) Optional<Integer> limitPage
+    ) {
+        return new ResponseEntity<>(userService.findAllUser(currentPage.orElse(1), limitPage.orElse(8)), HttpStatus.OK);
     }
 
     @PostMapping
@@ -52,5 +51,23 @@ public class UserAdminController {
     ) {
         validationService.handleValidate(errors);
         return new ResponseEntity<>(userService.authenticated(request), HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateUser(@Validated @RequestBody UserUpdateRequest request, Errors errors) {
+        validationService.handleValidate(errors);
+        userService.updateUser(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser(@RequestParam("email") String email){
+        userService.deleteUser(email);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

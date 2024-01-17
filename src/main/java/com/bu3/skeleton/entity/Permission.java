@@ -25,6 +25,8 @@ public class Permission extends BaseEntity {
 
     private String permissionCode;
 
+    private Boolean isDeleted;
+
     private String description;
 
     @ManyToOne

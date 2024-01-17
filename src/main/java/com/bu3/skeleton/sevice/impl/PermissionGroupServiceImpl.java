@@ -5,16 +5,21 @@ import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionGroupDto;
 import com.bu3.skeleton.dto.request.PermissionGroupRequest;
+import com.bu3.skeleton.dto.response.PermissionGroupResponses;
 import com.bu3.skeleton.entity.PermissionGroup;
 import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.PermissionGroupDtoMapper;
 import com.bu3.skeleton.repository.IPermissionGroupRepo;
 import com.bu3.skeleton.sevice.IPermissionGroupService;
+import com.bu3.skeleton.util.BaseAmenity;
+import com.bu3.skeleton.util.PageableResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +35,8 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final ObjectMapper objectMapper;
+
+    private final BaseAmenity baseAmenity;
 
     private final PermissionGroupDtoMapper permissionGroupDtoMapper;
 
@@ -53,8 +60,47 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
     }
 
     @Override
-    public List<PermissionGroupDto> findAllPermissionGroup() {
-        List<PermissionGroup> all = permissionGroupRepo.findAll();
+    public void updatePermissionGroup(PermissionGroupRequest request) {
+        if (permissionGroupRepo.existsByPermissionGroupNameNot(request.getPermissionGroupName())) {
+            throw new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE), Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
+        }
+
+        PermissionGroup permissionGroup = getPermissionGroup(request.getPermissionGroupName());
+
+        if (!permissionGroup.getPermissionGroupName().equals(request.getPermissionGroupName())) {
+            permissionGroup.setPermissionGroupName(request.getPermissionGroupName());
+        }
+
+        if (!permissionGroup.getDescription().equals(request.getDescription())) {
+            permissionGroup.setDescription(request.getDescription());
+        }
+
+        permissionGroup.setIsDeleted(request.getIsDeleted());
+
+        permissionGroupRepo.save(permissionGroup);
+    }
+
+    private PermissionGroup getPermissionGroup(String permissionGroupName) {
+        return permissionGroupRepo.findPermissionGroupByPermissionGroupName(permissionGroupName)
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
+                        Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS)));
+    }
+
+    @Override
+    public void deletePermissionGroup(String permissionGroupName) {
+        if (permissionGroupRepo == null) {
+            throw new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
+                    Translator.toLocale(TransitionCode.NOT_FOUND));
+        }
+        PermissionGroup permissionGroup = getPermissionGroup(permissionGroupName);
+        permissionGroup.setIsDeleted(false);
+        permissionGroupRepo.save(permissionGroup);
+    }
+
+    @Override
+    public PermissionGroupResponses findAllPermissionGroup(int currentPage, int limitPage) {
+        Pageable pageable = baseAmenity.pageable(currentPage, limitPage);
+        Page<PermissionGroup> all = permissionGroupRepo.findAll(pageable);
 //        try {
 //            redisTemplate.opsForValue().getOperations().delete("ca");
 //            if (redisTemplate.opsForValue().get("ca") != null) {
@@ -80,9 +126,20 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
 //        } catch (Exception e) {
 //            logger.error(e.getMessage());
 //        }
-
-        return all.stream()
+        List<PermissionGroupDto> permissionGroupDtos = all.stream()
                 .map(permissionGroupDtoMapper)
                 .toList();
+
+        PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
+
+        return PermissionGroupResponses.builder()
+                .code(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE))
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionGroupDtos)
+                .meta(pageableResponse)
+                .message(Translator.toLocale(TransitionCode.PERMISSION_GROUP_FIND_SUCCESS))
+                .responseTime(baseAmenity.currentTimeSeconds())
+                .build();
+
     }
 }

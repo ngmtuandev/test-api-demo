@@ -5,6 +5,12 @@ public class SystemConstant {
     private SystemConstant() {
     }
 
+    public static final Integer STATUS_CODE_SUCCESS = 200;
+    public static final Integer STATUS_CODE_BAD_REQUEST = 400;
+    public static final Integer STATUS_CODE_INTERNAL = 500;
+
+    public static final String API_USER_LOGOUT = "/logout";
+
     public static final String API_PUBLIC = "/public";
 
     public static final String API_ADMIN = "/admin";

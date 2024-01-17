@@ -6,6 +6,7 @@ import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.UserAddRequest;
 import com.bu3.skeleton.dto.request.UserLoginRequest;
+import com.bu3.skeleton.dto.request.UserUpdateRequest;
 import com.bu3.skeleton.dto.response.UsersResponse;
 import com.bu3.skeleton.entity.Token;
 import com.bu3.skeleton.entity.User;
@@ -16,12 +17,11 @@ import com.bu3.skeleton.mapper.UserDtoMapper;
 import com.bu3.skeleton.repository.ITokenRepo;
 import com.bu3.skeleton.repository.IUserRepo;
 import com.bu3.skeleton.sevice.IUserService;
+import com.bu3.skeleton.util.BaseAmenity;
 import com.bu3.skeleton.util.PageableResponse;
-import com.bu3.skeleton.util.TimeUnitResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,6 +46,8 @@ public class UserServiceImpl implements IUserService {
 
     private final ITokenRepo tokenRepo;
 
+    private final BaseAmenity baseAmenity;
+
     @Override
     public void addUser(UserAddRequest request) {
         if (userRepo.existsByEmail(request.getEmail())) {
@@ -68,18 +70,61 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UsersResponse findAllUser(Integer currentPage, Integer limitPage) {
-        Pageable pageable = PageRequest.of(currentPage - 1, limitPage);
-        List<User> users = userRepo.findAll();
+    public void updateUser(UserUpdateRequest request) {
+        User user = getUser(request.getEmail());
 
-        List<UserDto> userDtos = users.stream()
+        if (!passwordEncoder.matches(user.getPassword(), request.getPassword())) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        if (!user.getGender().equals(request.getGender())) {
+            user.setGender(request.getGender());
+        }
+
+        if (!user.getDateOfBirth().equals(request.getDateOfBirth())) {
+            user.setDateOfBirth(request.getDateOfBirth());
+        }
+
+        if (!user.getFullName().equals(request.getFullName())) {
+            user.setFullName(request.getFullName());
+        }
+
+        if (!user.getPhoneNumber().equals(request.getPhoneNumber())) {
+            user.setPhoneNumber(request.getPhoneNumber());
+        }
+
+        if (!user.getAddress().equals(request.getAddress())) {
+            user.setAddress(request.getAddress());
+        }
+
+        if (!user.getStatus().equals(request.getStatus())) {
+            user.setStatus(request.getStatus());
+        }
+
+        userRepo.save(user);
+    }
+
+    private User getUser(String email) {
+        return userRepo.findUserByEmail(email)
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.USER_CODE), Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
+    }
+
+    @Override
+    public void deleteUser(String email) {
+        User user = getUser(email);
+        user.setStatus(SystemConstant.USER_NO_ACTIVE);
+        userRepo.save(user);
+    }
+
+
+    @Override
+    public UsersResponse findAllUser(Integer currentPage, Integer limitPage) {
+        Page<User> all = userRepo.findAll(baseAmenity.pageable(currentPage, limitPage));
+        List<UserDto> userDtos = all.stream()
                 .map(userDtoMapper)
                 .toList();
 
-        PageableResponse pageableResponse = PageableResponse.builder()
-                .totalPage(getTotalPage(userDtos.size(), limitPage))
-                .meta(pageable)
-                .build();
+        PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return UsersResponse.builder()
                 .code(Translator.toLocale(TransitionCode.USER_CODE))
@@ -87,7 +132,7 @@ public class UserServiceImpl implements IUserService {
                 .data(userDtos)
                 .meta(pageableResponse)
                 .message(Translator.toLocale(TransitionCode.USER_SUCCESS))
-                .responseTime(TimeUnitResponse.currentTimeSeconds())
+                .responseTime(baseAmenity.currentTimeSeconds())
                 .build();
     }
 
@@ -101,9 +146,7 @@ public class UserServiceImpl implements IUserService {
         );
 
         User user = userRepo.findUserByEmailAndStatus(request.getEmail(), SystemConstant.USER_ACTIVE)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.USER_CODE),
-                        Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
-
+                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.USER_CODE), Translator.toLocale(TransitionCode.NOT_FOUND)));
         UserDto userDto = userDtoMapper.apply(user);
         var jwtToken = jwtService.generateToken(user);
         userDto.setJwtToken(jwtToken);
@@ -120,9 +163,5 @@ public class UserServiceImpl implements IUserService {
                 .revoked(false)
                 .build();
         tokenRepo.save(token);
-    }
-
-    private int getTotalPage(int size, int limit) {
-        return (int) Math.ceil((double) size / limit);
     }
 }

@@ -1,22 +1,21 @@
-package com.bu3.skeleton.dto;
+package com.bu3.skeleton.dto.request;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
-public class PermissionDto {
+@NoArgsConstructor
+public class PermissionUpdateRequest {
+
+    private UUID permissionGroupId;
 
     private UUID permissionId;
 
     private String permissionCode;
 
-    private Boolean isDeleted;
-
     private String description;
-
 }

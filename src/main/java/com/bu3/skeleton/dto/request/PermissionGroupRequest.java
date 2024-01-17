@@ -11,6 +11,8 @@ public class PermissionGroupRequest {
 
     private String permissionGroupName;
 
+    private Boolean isDeleted;
+
     private String description;
 
 }
