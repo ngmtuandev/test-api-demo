@@ -1,13 +1,13 @@
 package com.bu3.skeleton.sevice;
 
-import com.bu3.skeleton.dto.UserRoleDto;
 import com.bu3.skeleton.dto.request.UserRoleRequest;
-
-import java.util.List;
+import com.bu3.skeleton.dto.response.UserRoleResponses;
 
 public interface IUserRoleService {
 
     void addUserRole(UserRoleRequest request);
 
-    List<UserRoleDto> findAllUserRole();
+    void deleteUserRole(UserRoleRequest request);
+
+    UserRoleResponses findAllUserRole();
 }

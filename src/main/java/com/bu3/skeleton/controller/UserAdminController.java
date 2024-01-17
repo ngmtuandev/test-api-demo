@@ -1,11 +1,11 @@
 package com.bu3.skeleton.controller;
 
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.UserAddRequest;
 import com.bu3.skeleton.dto.request.UserLoginRequest;
 import com.bu3.skeleton.dto.request.UserUpdateRequest;
-import com.bu3.skeleton.dto.response.UsersResponse;
+import com.bu3.skeleton.dto.response.UserResponse;
+import com.bu3.skeleton.dto.response.UserResponses;
 import com.bu3.skeleton.sevice.IUserService;
 import com.bu3.skeleton.validation.IValidationService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class UserAdminController {
     private final IValidationService validationService;
 
     @GetMapping
-    public ResponseEntity<UsersResponse> findUsers(
+    public ResponseEntity<UserResponses> findUsers(
             @RequestParam(value = "current-page", required = false) Optional<Integer> currentPage,
             @RequestParam(value = "limit-page", required = false) Optional<Integer> limitPage
     ) {
@@ -45,7 +45,7 @@ public class UserAdminController {
     }
 
     @PostMapping("/authenticated")
-    public ResponseEntity<UserDto> authenticated(
+    public ResponseEntity<UserResponse> authenticated(
             @Validated @RequestBody UserLoginRequest request,
             Errors errors
     ) {
@@ -61,7 +61,7 @@ public class UserAdminController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteUser(@RequestParam("email") String email){
+    public ResponseEntity<?> deleteUser(@RequestParam("email") String email) {
         userService.deleteUser(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }

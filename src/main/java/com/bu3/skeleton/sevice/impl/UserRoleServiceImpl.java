@@ -5,6 +5,7 @@ import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.UserRoleDto;
 import com.bu3.skeleton.dto.request.UserRoleRequest;
+import com.bu3.skeleton.dto.response.UserRoleResponses;
 import com.bu3.skeleton.entity.Role;
 import com.bu3.skeleton.entity.User;
 import com.bu3.skeleton.entity.UserRole;
@@ -14,6 +15,7 @@ import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.repository.IUserRepo;
 import com.bu3.skeleton.repository.IUserRoleRepo;
 import com.bu3.skeleton.sevice.IUserRoleService;
+import com.bu3.skeleton.util.BaseAmenity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,8 @@ public class UserRoleServiceImpl implements IUserRoleService {
     private final IUserRepo userRepo;
 
     private final UserRoleDtoMapper userRoleDtoMapper;
+
+    private final BaseAmenity baseAmenity;
 
     @Override
     public void addUserRole(UserRoleRequest request) {
@@ -52,11 +56,26 @@ public class UserRoleServiceImpl implements IUserRoleService {
     }
 
     @Override
-    public List<UserRoleDto> findAllUserRole() {
+    public void deleteUserRole(UserRoleRequest request) {
+        UserRole userRole = userRoleRepo.findUserRoleByRoleNameAndEmail(request.getRoleName(), request.getEmail())
+                .orElseThrow(() -> new ApiRequestException(baseAmenity.getMessageNotification(TransitionCode.PERMISSION_CODE),
+                        baseAmenity.getMessageNotification(TransitionCode.USER_ROLE_NOT_FOUND)));
+
+        userRoleRepo.delete(userRole);
+    }
+
+    @Override
+    public UserRoleResponses findAllUserRole() {
         List<UserRole> all = userRoleRepo.findAll();
 
-        return all.stream()
+        List<UserRoleDto> userRoleDtos = all.stream()
                 .map(userRoleDtoMapper)
                 .toList();
+
+        return UserRoleResponses.builder()
+                .code(baseAmenity.getMessageNotification(TransitionCode.USER_ROLE_CODE))
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userRoleDtos)
+                .build();
     }
 }

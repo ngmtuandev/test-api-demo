@@ -1,10 +1,10 @@
 package com.bu3.skeleton.sevice;
 
-import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.UserAddRequest;
 import com.bu3.skeleton.dto.request.UserLoginRequest;
 import com.bu3.skeleton.dto.request.UserUpdateRequest;
-import com.bu3.skeleton.dto.response.UsersResponse;
+import com.bu3.skeleton.dto.response.UserResponse;
+import com.bu3.skeleton.dto.response.UserResponses;
 
 public interface IUserService {
 
@@ -14,7 +14,7 @@ public interface IUserService {
 
     void deleteUser(String email);
 
-    UsersResponse findAllUser(Integer currentPage, Integer limitPage);
+    UserResponses findAllUser(Integer currentPage, Integer limitPage);
 
-    UserDto authenticated(UserLoginRequest request);
+    UserResponse authenticated(UserLoginRequest request);
 }

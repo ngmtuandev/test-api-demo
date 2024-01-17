@@ -7,13 +7,15 @@ import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.UserAddRequest;
 import com.bu3.skeleton.dto.request.UserLoginRequest;
 import com.bu3.skeleton.dto.request.UserUpdateRequest;
-import com.bu3.skeleton.dto.response.UsersResponse;
+import com.bu3.skeleton.dto.response.UserResponse;
+import com.bu3.skeleton.dto.response.UserResponses;
 import com.bu3.skeleton.entity.Token;
 import com.bu3.skeleton.entity.User;
 import com.bu3.skeleton.enums.TokenType;
 import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.jwt.IJwtService;
 import com.bu3.skeleton.mapper.UserDtoMapper;
+import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.repository.ITokenRepo;
 import com.bu3.skeleton.repository.IUserRepo;
 import com.bu3.skeleton.sevice.IUserService;
@@ -47,6 +49,8 @@ public class UserServiceImpl implements IUserService {
     private final ITokenRepo tokenRepo;
 
     private final BaseAmenity baseAmenity;
+
+    private final IRoleRepo roleRepo;
 
     @Override
     public void addUser(UserAddRequest request) {
@@ -118,7 +122,7 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public UsersResponse findAllUser(Integer currentPage, Integer limitPage) {
+    public UserResponses findAllUser(Integer currentPage, Integer limitPage) {
         Page<User> all = userRepo.findAll(baseAmenity.pageable(currentPage, limitPage));
         List<UserDto> userDtos = all.stream()
                 .map(userDtoMapper)
@@ -126,7 +130,7 @@ public class UserServiceImpl implements IUserService {
 
         PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
-        return UsersResponse.builder()
+        return UserResponses.builder()
                 .code(Translator.toLocale(TransitionCode.USER_CODE))
                 .status(200)
                 .data(userDtos)
@@ -137,7 +141,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDto authenticated(UserLoginRequest request) {
+    public UserResponse authenticated(UserLoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -146,12 +150,20 @@ public class UserServiceImpl implements IUserService {
         );
 
         User user = userRepo.findUserByEmailAndStatus(request.getEmail(), SystemConstant.USER_ACTIVE)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.USER_CODE), Translator.toLocale(TransitionCode.NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(baseAmenity.getMessageNotification(TransitionCode.USER_CODE),
+                        baseAmenity.getMessageNotification(TransitionCode.NOT_FOUND)));
         UserDto userDto = userDtoMapper.apply(user);
         var jwtToken = jwtService.generateToken(user);
         userDto.setJwtToken(jwtToken);
         saveUserToken(user, jwtToken);
-        return userDto;
+
+        return UserResponse.builder()
+                .code(Translator.toLocale(TransitionCode.USER_CODE))
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDto)
+                .message(baseAmenity.getMessageNotification(TransitionCode.USER_SUCCESS))
+                .responseTime(baseAmenity.currentTimeSeconds())
+                .build();
     }
 
     private void saveUserToken(User user, String jwtToken) {

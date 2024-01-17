@@ -1,14 +1,12 @@
 package com.bu3.skeleton.util;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.concurrent.TimeUnit;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 public class BaseResponse<T> {
 
     private String code;
@@ -19,6 +17,6 @@ public class BaseResponse<T> {
 
     private String message;
 
-    private TimeUnit responseTime;
+    private long responseTime;
 
 }

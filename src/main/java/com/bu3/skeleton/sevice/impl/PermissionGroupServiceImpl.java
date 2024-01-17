@@ -133,7 +133,7 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
         PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return PermissionGroupResponses.builder()
-                .code(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE))
+                .code(baseAmenity.getMessageNotification(TransitionCode.PERMISSION_GROUP_CODE))
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionGroupDtos)
                 .meta(pageableResponse)

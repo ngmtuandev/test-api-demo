@@ -33,4 +33,6 @@ public class TransitionCode {
 
     public static final String PERMISSION_SUCCESS = "permission_success";
 
+    public static final String USER_ROLE_NOT_FOUND = "user_role_find_not_found";
+
 }

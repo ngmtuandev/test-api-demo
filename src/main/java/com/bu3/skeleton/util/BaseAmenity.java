@@ -1,5 +1,6 @@
 package com.bu3.skeleton.util;
 
+import com.bu3.skeleton.configuration.Translator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class BaseAmenity {
+
     public long currentTimeSeconds() {
         long currentTimeMillis = System.currentTimeMillis();
         return TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis);
@@ -26,4 +28,8 @@ public class BaseAmenity {
         return PageRequest.of(currentPage - 1, limitPage);
     }
 
+
+    public String getMessageNotification(String messageCode) {
+        return Translator.toLocale(messageCode);
+    }
 }
