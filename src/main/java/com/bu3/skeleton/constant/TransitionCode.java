@@ -27,5 +27,4 @@ public class TransitionCode {
     // Permission
     public static final String PERMISSION_FIND_NOT_FOUND = "permission_find_not_found";
 
-
 }

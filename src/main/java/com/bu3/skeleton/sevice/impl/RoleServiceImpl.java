@@ -52,6 +52,11 @@ public class RoleServiceImpl implements IRoleService {
                     Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
         }
 
+        if (roleRepo.existsByRoleName(request.getRoleName())) {
+            throw new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
+                    Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
+        }
+
         if (!role.getRoleName().equals(request.getRoleName())) {
             role.setRoleName(request.getRoleName());
         }
@@ -72,3 +77,8 @@ public class RoleServiceImpl implements IRoleService {
                 .toList();
     }
 }
+
+
+
+
+
