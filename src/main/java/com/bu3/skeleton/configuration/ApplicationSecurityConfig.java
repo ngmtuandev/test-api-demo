@@ -38,17 +38,14 @@ public class ApplicationSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> requests
-                        .anyRequest().permitAll()
+                        .requestMatchers(SystemConstant.API_PUBLIC + "/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
-                        .logoutUrl(
-                                SystemConstant.API_SKELETON +
-                                        SystemConstant.API_ADMIN + SystemConstant.VERSION_1 +
-                                        UserConstant.API_USER +
-                                        SystemConstant.API_USER_LOGOUT).permitAll()
+                        .logoutUrl(SystemConstant.API_PUBLIC + SystemConstant.VERSION_1 + UserConstant.API_USER + SystemConstant.API_USER_LOGOUT)
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );

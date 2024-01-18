@@ -15,6 +15,7 @@ public interface IUserService {
     UserResponse deleteUser(String email);
 
     UserResponses findAllUser(Integer currentPage, Integer limitPage);
+    UserResponses findUsersByIsDeleted(Integer currentPage, Integer limitPage, Boolean isDeleted);
 
     UserResponse authenticated(UserLoginRequest request);
 }

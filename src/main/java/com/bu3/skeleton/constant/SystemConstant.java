@@ -9,6 +9,10 @@ public class SystemConstant {
     public static final Integer STATUS_CODE_BAD_REQUEST = 400;
     public static final Integer STATUS_CODE_INTERNAL = 500;
 
+    public static final String CURRENT_PAGE = "currentPage";
+    public static final String LIMIT_PAGE = "limitPage";
+    public static final String IS_DELETE = "isDeleted";
+
     public static final String API_SKELETON = "/skeleton";
 
     public static final String API_USER_LOGOUT = "/logout";

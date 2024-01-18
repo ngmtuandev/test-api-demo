@@ -24,6 +24,7 @@ import com.bu3.skeleton.util.BaseAmenityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements IUserService {
 
     private final ITokenRepo tokenRepo;
 
-    private final BaseAmenityUtil baseAmenity;
+    private final BaseAmenityUtil baseAmenityUtil;
 
     private final IRoleRepo roleRepo;
 
@@ -78,7 +79,7 @@ public class UserServiceImpl implements IUserService {
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtoMapper.apply(userSave))
                 .message(Translator.toLocale(TransitionCode.ADD_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
@@ -113,7 +114,7 @@ public class UserServiceImpl implements IUserService {
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtoMapper.apply(userSave))
                 .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
@@ -133,19 +134,19 @@ public class UserServiceImpl implements IUserService {
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtoMapper.apply(userSave))
                 .message(Translator.toLocale(TransitionCode.DELETE_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
 
     @Override
     public UserResponses findAllUser(Integer currentPage, Integer limitPage) {
-        Page<User> all = userRepo.findAll(baseAmenity.pageable(currentPage, limitPage));
+        Page<User> all = userRepo.findAll(baseAmenityUtil.pageable(currentPage, limitPage));
         List<UserDto> userDtos = all.stream()
                 .map(userDtoMapper)
                 .toList();
 
-        PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
+        PageableResponse pageableResponse = baseAmenityUtil.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return UserResponses.builder()
                 .code(userCode)
@@ -153,7 +154,26 @@ public class UserServiceImpl implements IUserService {
                 .data(userDtos)
                 .meta(pageableResponse)
                 .message(Translator.toLocale(TransitionCode.USER_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public UserResponses findUsersByIsDeleted(Integer currentPage, Integer limitPage, Boolean isDeleted) {
+        Pageable pageable = baseAmenityUtil.pageable(currentPage, limitPage);
+        Page<User> users = userRepo.findUsersByIsDeleted(isDeleted, pageable);
+
+        List<UserDto> userDtos = users.stream()
+                .map(userDtoMapper)
+                .toList();
+
+        return UserResponses.builder()
+                .code(userCode)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDtos)
+                .meta(baseAmenityUtil.pageableResponse(currentPage, limitPage, users.getTotalPages()))
+                .message(Translator.toLocale(TransitionCode.GET_SUCCESS))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
@@ -179,7 +199,7 @@ public class UserServiceImpl implements IUserService {
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDto)
                 .message(Translator.toLocale(TransitionCode.USER_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 

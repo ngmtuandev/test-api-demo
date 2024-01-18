@@ -33,8 +33,8 @@ public class UserRoleAdminController {
      * */
     @GetMapping
     public ResponseEntity<UserRoleResponses> findAllUserRole(
-            @RequestParam("currentPage") Optional<Integer> currentPage,
-            @RequestParam("limitPage") Optional<Integer> limitPage
+            @RequestParam(value = SystemConstant.CURRENT_PAGE, required = false) Optional<Integer> currentPage,
+            @RequestParam(value = SystemConstant.LIMIT_PAGE, required = false) Optional<Integer> limitPage
     ) {
         return new ResponseEntity<>(userRoleService.findAllUserRole(currentPage.orElse(1), limitPage.orElse(8)), HttpStatus.OK);
     }

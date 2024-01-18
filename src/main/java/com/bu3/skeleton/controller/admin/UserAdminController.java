@@ -3,7 +3,6 @@ package com.bu3.skeleton.controller.admin;
 import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.constant.UserConstant;
 import com.bu3.skeleton.dto.request.user.UserAddRequest;
-import com.bu3.skeleton.dto.request.user.UserLoginRequest;
 import com.bu3.skeleton.dto.request.user.UserUpdateRequest;
 import com.bu3.skeleton.dto.response.user.UserResponse;
 import com.bu3.skeleton.dto.response.user.UserResponses;
@@ -32,10 +31,19 @@ public class UserAdminController {
 
     @GetMapping
     public ResponseEntity<UserResponses> findUsers(
-            @RequestParam(value = "currentPage", required = false) Optional<Integer> currentPage,
-            @RequestParam(value = "limitPage", required = false) Optional<Integer> limitPage
+            @RequestParam(value = SystemConstant.CURRENT_PAGE, required = false) Optional<Integer> currentPage,
+            @RequestParam(value = SystemConstant.LIMIT_PAGE, required = false) Optional<Integer> limitPage
     ) {
         return new ResponseEntity<>(userService.findAllUser(currentPage.orElse(1), limitPage.orElse(8)), HttpStatus.OK);
+    }
+
+    @GetMapping(UserConstant.API_USER_IS_DELETE)
+    public ResponseEntity<UserResponses> findUsersByIsDeleted(
+            @RequestParam(value = SystemConstant.CURRENT_PAGE, required = false) Optional<Integer> currentPage,
+            @RequestParam(value = SystemConstant.LIMIT_PAGE, required = false) Optional<Integer> limitPage,
+            @RequestParam(value = SystemConstant.IS_DELETE, required = false) Boolean isDeleted
+    ) {
+        return new ResponseEntity<>(userService.findUsersByIsDeleted(currentPage.orElse(1), limitPage.orElse(8), isDeleted), HttpStatus.OK);
     }
 
     @PostMapping
@@ -43,13 +51,6 @@ public class UserAdminController {
             @Valid @RequestBody UserAddRequest request
     ) {
         return new ResponseEntity<>(userService.addUser(request), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/authenticated")
-    public ResponseEntity<UserResponse> authenticated(
-            @Valid @RequestBody UserLoginRequest request
-    ) {
-        return new ResponseEntity<>(userService.authenticated(request), HttpStatus.OK);
     }
 
     @PutMapping
@@ -60,10 +61,5 @@ public class UserAdminController {
     @DeleteMapping
     public ResponseEntity<UserResponse> deleteUser(@RequestParam("email") String email) {
         return new ResponseEntity<>(userService.deleteUser(email), HttpStatus.OK);
-    }
-
-    @GetMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

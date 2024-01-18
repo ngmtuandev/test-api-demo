@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,10 +29,10 @@ public class PermissionAdminController {
 
     private final IPermissionService permissionService;
 
-    @GetMapping("/{currentPage}/{limitPage}")
+    @GetMapping()
     public ResponseEntity<PermissionResponses> findAllPermission(
-            @PathVariable("currentPage") Optional<Integer> currentPage,
-            @PathVariable("limitPage") Optional<Integer> limitPage
+            @RequestParam(value = SystemConstant.CURRENT_PAGE, required = false) Optional<Integer> currentPage,
+            @RequestParam(value = SystemConstant.LIMIT_PAGE, required = false) Optional<Integer> limitPage
     ) {
         return new ResponseEntity<>(permissionService.findAllPermission(currentPage.orElse(1), limitPage.orElse(10)), HttpStatus.OK);
     }
