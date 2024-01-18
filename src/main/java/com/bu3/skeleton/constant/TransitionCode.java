@@ -13,6 +13,13 @@ public class TransitionCode {
 
     // User
     public static final String USER_SUCCESS = "user_success";
+    public static final String ADD_SUCCESS = "add_success";
+    public static final String UPDATE_SUCCESS = "update_success";
+    public static final String DELETE_SUCCESS = "delete_success";
+    public static final String GET_SUCCESS = "get_success";
+    public static final String ADD_ERROR = "add_error";
+    public static final String UPDATE_ERROR = "update_error";
+    public static final String DELETE_ERROR = "delete_error";
 
     // User role
     public static final String USER_ROLE_CODE = "user_role_code";
@@ -34,5 +41,8 @@ public class TransitionCode {
     public static final String PERMISSION_SUCCESS = "permission_success";
 
     public static final String USER_ROLE_NOT_FOUND = "user_role_find_not_found";
+
+    public static final String ERROR_SERVER = "error_server";
+    public static final String ERROR_VALIDATION_FIELD = "error_validation";
 
 }

@@ -12,8 +12,10 @@ public class RoleDtoMapper implements Function<Role, RoleDto> {
     @Override
     public RoleDto apply(Role role) {
         return RoleDto.builder()
+                .roleId(role.getId())
                 .roleName(role.getRoleName())
                 .roleCode(role.getRoleCode())
+                .isDeleted(role.getIsDeleted())
                 .build();
     }
 }

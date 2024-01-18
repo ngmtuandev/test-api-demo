@@ -46,7 +46,7 @@ spring:
         use_nationalized_character_data: true
         enable_lazy_load_no_trans: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
   flyway:
     baselineOnMigrate: ${FLYWAY.BASE_LINE_ON_MIGRATE:true}
     baselineVersion: ${FLYWAY.BASE_LINE_VERSION:0}

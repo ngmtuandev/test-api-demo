@@ -4,15 +4,16 @@ import com.bu3.skeleton.configuration.Translator;
 import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionGroupDto;
-import com.bu3.skeleton.dto.request.PermissionGroupRequest;
-import com.bu3.skeleton.dto.response.PermissionGroupResponses;
+import com.bu3.skeleton.dto.request.permissiongroup.PermissionGroupRequest;
+import com.bu3.skeleton.dto.response.PageableResponse;
+import com.bu3.skeleton.dto.response.permissiongroup.PermissionGroupResponse;
+import com.bu3.skeleton.dto.response.permissiongroup.PermissionGroupResponses;
 import com.bu3.skeleton.entity.PermissionGroup;
 import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.PermissionGroupDtoMapper;
 import com.bu3.skeleton.repository.IPermissionGroupRepo;
 import com.bu3.skeleton.sevice.IPermissionGroupService;
-import com.bu3.skeleton.util.BaseAmenity;
-import com.bu3.skeleton.util.PageableResponse;
+import com.bu3.skeleton.util.BaseAmenityUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,33 +37,40 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
 
     private final ObjectMapper objectMapper;
 
-    private final BaseAmenity baseAmenity;
+    private final BaseAmenityUtil baseAmenity;
 
     private final PermissionGroupDtoMapper permissionGroupDtoMapper;
+    private final String permissionGroupCode = Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE);
 
     private final Logger logger = LoggerFactory.getLogger(PermissionGroupServiceImpl.class);
 
-
     @Override
-    public void addPermissionGroup(PermissionGroupRequest request) {
+    public PermissionGroupResponse addPermissionGroup(PermissionGroupRequest request) {
         if (permissionGroupRepo.existsByPermissionGroupName(request.getPermissionGroupName())) {
-            throw new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
-                    Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
+            throw new ApiRequestException(permissionGroupCode, Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
         }
 
-        permissionGroupRepo.save(
+        PermissionGroup permissionGroup = permissionGroupRepo.save(
                 PermissionGroup.builder()
                         .permissionGroupName(request.getPermissionGroupName())
                         .description(request.getDescription())
-                        .isDeleted(SystemConstant.PERMISSION_GROUP_ACTIVE)
+                        .isDeleted(SystemConstant.ACTIVE)
                         .build()
         );
+
+        return PermissionGroupResponse.builder()
+                .code(permissionGroupCode)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionGroupDtoMapper.apply(permissionGroup))
+                .message(Translator.toLocale(TransitionCode.ADD_SUCCESS))
+                .responseTime(baseAmenity.currentTimeSeconds())
+                .build();
     }
 
     @Override
-    public void updatePermissionGroup(PermissionGroupRequest request) {
+    public PermissionGroupResponse updatePermissionGroup(PermissionGroupRequest request) {
         if (permissionGroupRepo.existsByPermissionGroupNameNot(request.getPermissionGroupName())) {
-            throw new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE), Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
+            throw new ApiRequestException(permissionGroupCode, Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
         }
 
         PermissionGroup permissionGroup = getPermissionGroup(request.getPermissionGroupName());
@@ -75,26 +83,38 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
             permissionGroup.setDescription(request.getDescription());
         }
 
-        permissionGroup.setIsDeleted(request.getIsDeleted());
+        PermissionGroup permissionGroupSave = permissionGroupRepo.save(permissionGroup);
 
-        permissionGroupRepo.save(permissionGroup);
+        return PermissionGroupResponse.builder()
+                .code(permissionGroupCode)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionGroupDtoMapper.apply(permissionGroupSave))
+                .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
+                .responseTime(baseAmenity.currentTimeSeconds())
+                .build();
     }
 
     private PermissionGroup getPermissionGroup(String permissionGroupName) {
         return permissionGroupRepo.findPermissionGroupByPermissionGroupName(permissionGroupName)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
-                        Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS)));
+                .orElseThrow(() -> new ApiRequestException(permissionGroupCode, Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS)));
     }
 
     @Override
-    public void deletePermissionGroup(String permissionGroupName) {
+    public PermissionGroupResponse deletePermissionGroup(String permissionGroupName) {
         if (permissionGroupRepo == null) {
-            throw new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
-                    Translator.toLocale(TransitionCode.NOT_FOUND));
+            throw new ApiRequestException(Translator.toLocale(permissionGroupCode), Translator.toLocale(TransitionCode.NOT_FOUND));
         }
         PermissionGroup permissionGroup = getPermissionGroup(permissionGroupName);
         permissionGroup.setIsDeleted(false);
-        permissionGroupRepo.save(permissionGroup);
+        PermissionGroup permissionGroupSave = permissionGroupRepo.save(permissionGroup);
+
+        return PermissionGroupResponse.builder()
+                .code(permissionGroupCode)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionGroupDtoMapper.apply(permissionGroupSave))
+                .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
+                .responseTime(baseAmenity.currentTimeSeconds())
+                .build();
     }
 
     @Override
@@ -133,7 +153,7 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
         PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return PermissionGroupResponses.builder()
-                .code(baseAmenity.getMessageNotification(TransitionCode.PERMISSION_GROUP_CODE))
+                .code(permissionGroupCode)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionGroupDtos)
                 .meta(pageableResponse)

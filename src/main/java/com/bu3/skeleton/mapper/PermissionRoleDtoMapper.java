@@ -17,6 +17,7 @@ public class PermissionRoleDtoMapper implements Function<PermissionRole, Permiss
                 .permissionCode(permissionRole.getPermission().getPermissionCode())
                 .roleId(permissionRole.getRole().getId())
                 .roleName(permissionRole.getRole().getRoleName())
+                .isDeleted(permissionRole.getIsDeleted())
                 .build();
     }
 }

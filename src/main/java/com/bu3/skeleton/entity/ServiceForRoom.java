@@ -7,21 +7,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'service_for_room'")
+@Table(name = "`service_for_room`")
 @Entity
 public class ServiceForRoom {
     @Id
@@ -35,6 +35,8 @@ public class ServiceForRoom {
     @ManyToOne
     @JoinColumn(name = "room_info_id")
     private RoomInfo roomInfo;
+
+    private Boolean isDeleted;
 
     @ManyToOne
     @JoinColumn(name = "room_service_catalog_id")

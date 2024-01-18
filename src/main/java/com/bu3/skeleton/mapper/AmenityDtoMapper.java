@@ -15,6 +15,7 @@ public class AmenityDtoMapper implements Function<Amenity, AmenityDto> {
                 .amenityId(amenity.getId())
                 .parentId(amenity.getParentId())
                 .amenityHotelName(amenity.getAmenityHotelName())
+                .isDeleted(amenity.getIsDeleted())
                 .description(amenity.getDescription())
                 .build();
     }

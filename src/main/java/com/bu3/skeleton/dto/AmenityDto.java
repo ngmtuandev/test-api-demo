@@ -18,4 +18,6 @@ public class AmenityDto {
     private String amenityHotelName;
 
     private String description;
+
+    private Boolean isDeleted;
 }

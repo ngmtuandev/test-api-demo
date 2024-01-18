@@ -4,14 +4,14 @@ import com.bu3.skeleton.configuration.Translator;
 import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.RoleDto;
-import com.bu3.skeleton.dto.request.RoleRequest;
-import com.bu3.skeleton.dto.response.RoleResponse;
+import com.bu3.skeleton.dto.request.role.RoleAddRequest;
+import com.bu3.skeleton.dto.response.role.RoleResponse;
 import com.bu3.skeleton.entity.Role;
 import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.RoleDtoMapper;
 import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.sevice.IRoleService;
-import com.bu3.skeleton.util.BaseAmenity;
+import com.bu3.skeleton.util.BaseAmenityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +28,12 @@ public class RoleServiceImpl implements IRoleService {
 
     private final RoleDtoMapper roleDtoMapper;
 
-    private final BaseAmenity baseAmenity;
+    private final BaseAmenityUtil baseAmenity;
+
+    private final String roleCode = Translator.toLocale(TransitionCode.ROLE_CODE);
 
     @Override
-    public void addRole(RoleRequest request) {
+    public void addRole(RoleAddRequest request) {
         if (roleRepo.existsByRoleName(request.getRoleName())) {
             throw new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
                     Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
@@ -41,13 +43,13 @@ public class RoleServiceImpl implements IRoleService {
                 Role.builder()
                         .roleName(request.getRoleName())
                         .roleCode(request.getRoleCode())
-                        .status(SystemConstant.ROLE_ACTIVE)
+                        .isDeleted(SystemConstant.ACTIVE)
                         .build()
         );
     }
 
     @Override
-    public void updateRole(RoleRequest request) {
+    public void updateRole(RoleAddRequest request) {
         Role role = roleRepo.findRoleByRoleName(request.getRoleName())
                 .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
                         Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS)));
@@ -76,8 +78,8 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public RoleResponse findById(UUID roleId) {
         roleRepo.findById(roleId)
-                .orElseThrow(() -> new ApiRequestException(baseAmenity.getMessageNotification(TransitionCode.ROLE_CODE),
-                        baseAmenity.getMessageNotification(TransitionCode.NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(roleCode,
+                        Translator.toLocale(TransitionCode.NOT_FOUND)));
         return null;
     }
 

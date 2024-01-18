@@ -1,18 +1,18 @@
 package com.bu3.skeleton.sevice;
 
-import com.bu3.skeleton.dto.request.UserAddRequest;
-import com.bu3.skeleton.dto.request.UserLoginRequest;
-import com.bu3.skeleton.dto.request.UserUpdateRequest;
-import com.bu3.skeleton.dto.response.UserResponse;
-import com.bu3.skeleton.dto.response.UserResponses;
+import com.bu3.skeleton.dto.request.user.UserAddRequest;
+import com.bu3.skeleton.dto.request.user.UserLoginRequest;
+import com.bu3.skeleton.dto.request.user.UserUpdateRequest;
+import com.bu3.skeleton.dto.response.user.UserResponse;
+import com.bu3.skeleton.dto.response.user.UserResponses;
 
 public interface IUserService {
 
-    void addUser(UserAddRequest request);
+    UserResponse addUser(UserAddRequest request);
 
-    void updateUser(UserUpdateRequest request);
+    UserResponse updateUser(UserUpdateRequest request);
 
-    void deleteUser(String email);
+    UserResponse deleteUser(String email);
 
     UserResponses findAllUser(Integer currentPage, Integer limitPage);
 

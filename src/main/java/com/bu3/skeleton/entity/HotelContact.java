@@ -8,21 +8,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Column;
 import jakarta.persistence.OneToOne;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'hotel_contact'")
+@Table(name = "`hotel_contact`")
 @Entity
 public class HotelContact{
     @Id
@@ -43,6 +43,8 @@ public class HotelContact{
     private String facebookLink;
 
     private String zaloLink;
+
+    private Boolean isDeleted;
 
     @OneToOne
     @JoinColumn(name = "hotel_id", referencedColumnName = "id")

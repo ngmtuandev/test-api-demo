@@ -22,5 +22,5 @@ public interface IUserRepo extends JpaRepository<User, UUID> {
 
     Optional<User> findUserByEmail(String email);
 
-    Optional<User> findUserByEmailAndStatus(String email, String status);
+    Optional<User> findUserByEmailAndIsDeleted(String email, Boolean isDeleted);
 }

@@ -1,11 +1,11 @@
 package com.bu3.skeleton.entity;
 
-import com.bu3.skeleton.util.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'user'")
+@Table(name = "`user`")
 @Entity
 public class User extends BaseEntity implements UserDetails {
-
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -39,7 +39,6 @@ public class User extends BaseEntity implements UserDetails {
 
     private String address;
 
-    private String status;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserRole> userRoles;
 

@@ -16,6 +16,7 @@ public class UserRoleDtoMapper implements Function<UserRole, UserRoleDto> {
                 .roleName(userRole.getRole().getRoleName())
                 .email(userRole.getUser().getEmail())
                 .fullName(userRole.getUser().getFullName())
+                .isDeleted(userRole.getIsDeleted())
                 .build();
     }
 }

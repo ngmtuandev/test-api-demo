@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
 public class UserDto {
+
+    private UUID userId;
 
     private String email;
 
@@ -23,7 +26,7 @@ public class UserDto {
 
     private String address;
 
-    private String status;
+    private Boolean isDeleted;
 
     private String jwtToken;
 }

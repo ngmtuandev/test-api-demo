@@ -1,28 +1,25 @@
 package com.bu3.skeleton.entity;
 
-import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'slogan'")
+@Table(name = "`slogan`")
 @Entity
 public class Slogan extends BaseEntity {
 
     private String parentId;
 
     private String languageCode;
-
-    private String status;
 
     private String titleSlogan;
 

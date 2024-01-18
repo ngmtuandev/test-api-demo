@@ -1,6 +1,7 @@
 package com.bu3.skeleton.configuration;
 
 import com.bu3.skeleton.constant.SystemConstant;
+import com.bu3.skeleton.constant.UserConstant;
 import com.bu3.skeleton.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +44,11 @@ public class ApplicationSecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
-                        .logoutUrl(SystemConstant.API_ADMIN+SystemConstant.VERSION_1+SystemConstant.API_USER+SystemConstant.API_USER_LOGOUT).permitAll()
+                        .logoutUrl(
+                                SystemConstant.API_SKELETON +
+                                        SystemConstant.API_ADMIN + SystemConstant.VERSION_1 +
+                                        UserConstant.API_USER +
+                                        SystemConstant.API_USER_LOGOUT).permitAll()
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );

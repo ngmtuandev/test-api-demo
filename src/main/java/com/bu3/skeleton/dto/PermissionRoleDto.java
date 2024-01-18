@@ -20,4 +20,6 @@ public class PermissionRoleDto {
     private UUID roleId;
 
     private String roleName;
+
+    private Boolean isDeleted;
 }

@@ -33,7 +33,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> userRepo.findUserByEmailAndStatus(email, SystemConstant.USER_ACTIVE)
+        return email -> userRepo.findUserByEmailAndIsDeleted(email, SystemConstant.ACTIVE)
                 .orElseThrow(() -> new UsernameNotFoundException(Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
     }
 

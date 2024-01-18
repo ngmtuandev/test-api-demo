@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 public record ApiException(
         String code,
-        String status,
-        HttpStatus message,
+        Integer status,
+        String message,
         long responseTime
 ) {
 }

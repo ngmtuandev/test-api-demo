@@ -4,9 +4,10 @@ import com.bu3.skeleton.configuration.Translator;
 import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionDto;
-import com.bu3.skeleton.dto.request.PermissionRequest;
-import com.bu3.skeleton.dto.request.PermissionUpdateRequest;
-import com.bu3.skeleton.dto.response.PermissionResponses;
+import com.bu3.skeleton.dto.request.permission.PermissionRequest;
+import com.bu3.skeleton.dto.request.permission.PermissionUpdateRequest;
+import com.bu3.skeleton.dto.response.PageableResponse;
+import com.bu3.skeleton.dto.response.permission.PermissionResponses;
 import com.bu3.skeleton.entity.Permission;
 import com.bu3.skeleton.entity.PermissionGroup;
 import com.bu3.skeleton.exception.ApiRequestException;
@@ -14,11 +15,9 @@ import com.bu3.skeleton.mapper.PermissionDtoMapper;
 import com.bu3.skeleton.repository.IPermissionGroupRepo;
 import com.bu3.skeleton.repository.IPermissionRepo;
 import com.bu3.skeleton.sevice.IPermissionService;
-import com.bu3.skeleton.util.BaseAmenity;
-import com.bu3.skeleton.util.PageableResponse;
+import com.bu3.skeleton.util.BaseAmenityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +36,14 @@ public class PermissionServiceImpl implements IPermissionService {
 
     private final IPermissionGroupRepo permissionGroupRepo;
 
-    private final BaseAmenity baseAmenity;
+    private final BaseAmenityUtil baseAmenity;
+
+    private final String permissionCode = Translator.toLocale(TransitionCode.PERMISSION_CODE);
 
 
     private Permission getPermission(UUID permissionId) {
         return permissionRepo.findById(permissionId)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_CODE),
+                .orElseThrow(() -> new ApiRequestException(permissionCode,
                         Translator.toLocale(TransitionCode.PERMISSION_FIND_NOT_FOUND)));
     }
 
@@ -60,6 +61,7 @@ public class PermissionServiceImpl implements IPermissionService {
                 Permission.builder()
                         .permissionGroup(permissionGroup)
                         .permissionCode(request.getPermissionCode())
+                        .isDeleted(SystemConstant.ACTIVE)
                         .build()
         );
     }
@@ -88,13 +90,13 @@ public class PermissionServiceImpl implements IPermissionService {
     @Override
     public void deletePermission(UUID permissionId) {
         Permission permission = getPermission(permissionId);
-        permission.setIsDeleted(false);
+        permission.setIsDeleted(SystemConstant.NO_ACTIVE);
         permissionRepo.save(permission);
     }
 
     @Override
     public PermissionResponses findAllPermission(Integer currentPage, Integer limitPage) {
-        Pageable pageable = baseAmenity.pageable(currentPage,limitPage);
+        Pageable pageable = baseAmenity.pageable(currentPage, limitPage);
         Page<Permission> all = permissionRepo.findAll(pageable);
 
         List<PermissionDto> permissionDtos = all.stream()
@@ -104,7 +106,7 @@ public class PermissionServiceImpl implements IPermissionService {
         PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return PermissionResponses.builder()
-                .code(Translator.toLocale(TransitionCode.PERMISSION_CODE))
+                .code(permissionCode)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionDtos)
                 .meta(pageableResponse)

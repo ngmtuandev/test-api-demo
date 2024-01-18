@@ -7,21 +7,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'booking_detail'")
+@Table(name = "`booking_detail`")
 @Entity
 public class BookingDetail {
     @Id
@@ -32,6 +32,8 @@ public class BookingDetail {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
+
+    private Boolean isDeleted;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
