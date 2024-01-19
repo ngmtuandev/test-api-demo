@@ -5,6 +5,18 @@ public class SystemConstant {
     private SystemConstant() {
     }
 
+    public static final Integer STATUS_CODE_SUCCESS = 200;
+    public static final Integer STATUS_CODE_BAD_REQUEST = 400;
+    public static final Integer STATUS_CODE_INTERNAL = 500;
+
+    public static final String CURRENT_PAGE = "currentPage";
+    public static final String LIMIT_PAGE = "limitPage";
+    public static final String IS_DELETE = "isDeleted";
+
+    public static final String API_SKELETON = "/skeleton";
+
+    public static final String API_USER_LOGOUT = "/logout";
+
     public static final String API_PUBLIC = "/public";
 
     public static final String API_ADMIN = "/admin";
@@ -12,30 +24,8 @@ public class SystemConstant {
     public static final String GROUP_INTERNAL = "/internal";
     public static final String SEND_MAIL = "/send-mail";
 
-    // User
-    public static final String USER_ACTIVE = "user active";
-    public static final String USER_NO_ACTIVE = "user noa active";
-    public static final String API_USER = "/user";
-
-    // Role
-    public static final String API_ROLE = "/role";
-
-    public static final String ROLE_ACTIVE = "active";
-
-    // UserRole
-    public static final String API_USER_ROLE = "/user-role";
-
-    // Permission
-    public static final String API_PERMISSION = "/permission";
-
-    // Permission Role
-    public static final String API_PERMISSION_ROLE = "/permission-role";
-
-    // Permission Group
-    public static final Boolean PERMISSION_GROUP_ACTIVE = true;
-
-    public static final String API_PERMISSION_GROUP = "/permission-group";
-
+    public static final Boolean ACTIVE = false;
+    public static final Boolean NO_ACTIVE = true;
     // JwtFilter
     public static final String BEARER = "Bearer ";
 

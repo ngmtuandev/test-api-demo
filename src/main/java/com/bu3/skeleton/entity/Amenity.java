@@ -1,23 +1,22 @@
 package com.bu3.skeleton.entity;
 
-import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'amenity'")
+@Table(name = "`amenity`")
 @Entity
 public class Amenity extends BaseEntity {
 
@@ -26,8 +25,6 @@ public class Amenity extends BaseEntity {
     private String languageCode;
 
     private String amenityHotelName;
-
-    private Boolean isDeleted;
 
     private String description;
 

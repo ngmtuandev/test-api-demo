@@ -1,16 +1,21 @@
 package com.bu3.skeleton.sevice;
 
-import com.bu3.skeleton.dto.UserDto;
-import com.bu3.skeleton.dto.request.UserAddRequest;
-import com.bu3.skeleton.dto.request.UserLoginRequest;
-
-import java.util.List;
+import com.bu3.skeleton.dto.request.user.UserAddRequest;
+import com.bu3.skeleton.dto.request.user.UserLoginRequest;
+import com.bu3.skeleton.dto.request.user.UserUpdateRequest;
+import com.bu3.skeleton.dto.response.user.UserResponse;
+import com.bu3.skeleton.dto.response.user.UserResponses;
 
 public interface IUserService {
 
-    void addUser(UserAddRequest request);
+    UserResponse addUser(UserAddRequest request);
 
-    List<UserDto> findAllUser();
+    UserResponse updateUser(UserUpdateRequest request);
 
-    UserDto authenticated(UserLoginRequest request);
+    UserResponse deleteUser(String email);
+
+    UserResponses findAllUser(Integer currentPage, Integer limitPage);
+    UserResponses findUsersByIsDeleted(Integer currentPage, Integer limitPage, Boolean isDeleted);
+
+    UserResponse authenticated(UserLoginRequest request);
 }

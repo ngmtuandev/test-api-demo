@@ -1,14 +1,16 @@
 package com.bu3.skeleton.sevice;
 
-import com.bu3.skeleton.dto.PermissionGroupDto;
-import com.bu3.skeleton.dto.request.PermissionGroupRequest;
-
-import java.util.List;
+import com.bu3.skeleton.dto.request.permissiongroup.PermissionGroupRequest;
+import com.bu3.skeleton.dto.response.permissiongroup.PermissionGroupResponse;
+import com.bu3.skeleton.dto.response.permissiongroup.PermissionGroupResponses;
 
 public interface IPermissionGroupService {
 
-    void addPermissionGroup(PermissionGroupRequest request);
+    PermissionGroupResponse addPermissionGroup(PermissionGroupRequest request);
+    PermissionGroupResponse updatePermissionGroup(PermissionGroupRequest request);
 
-    List<PermissionGroupDto> findAllPermissionGroup();
+    PermissionGroupResponse deletePermissionGroup(String permissionGroupName);
+
+    PermissionGroupResponses findAllPermissionGroup(int currentPage, int limitPage);
 
 }

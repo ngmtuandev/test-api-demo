@@ -1,23 +1,29 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.UserDto;
-import com.bu3.skeleton.dto.request.UserAddRequest;
-import com.bu3.skeleton.dto.request.UserLoginRequest;
+import com.bu3.skeleton.dto.request.user.UserAddRequest;
+import com.bu3.skeleton.dto.request.user.UserLoginRequest;
+import com.bu3.skeleton.dto.request.user.UserUpdateRequest;
+import com.bu3.skeleton.dto.response.PageableResponse;
+import com.bu3.skeleton.dto.response.user.UserResponse;
+import com.bu3.skeleton.dto.response.user.UserResponses;
 import com.bu3.skeleton.entity.Token;
 import com.bu3.skeleton.entity.User;
 import com.bu3.skeleton.enums.TokenType;
-import com.bu3.skeleton.exception.ResourceDuplicateException;
-import com.bu3.skeleton.exception.ResourceNotFoundException;
+import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.jwt.IJwtService;
 import com.bu3.skeleton.mapper.UserDtoMapper;
+import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.repository.ITokenRepo;
 import com.bu3.skeleton.repository.IUserRepo;
 import com.bu3.skeleton.sevice.IUserService;
+import com.bu3.skeleton.util.BaseAmenityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,13 +48,21 @@ public class UserServiceImpl implements IUserService {
 
     private final ITokenRepo tokenRepo;
 
+    private final IRoleRepo roleRepo;
+
+    private final BaseAmenityUtil baseAmenityUtil;
+
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
+
     @Override
-    public void addUser(UserAddRequest request) {
+    public UserResponse addUser(UserAddRequest request) {
         if (userRepo.existsByEmail(request.getEmail())) {
-            throw new ResourceDuplicateException(Translator.toLocale(TransitionCode.EMAIL_DUPLICATE));
+            throw new ApiRequestException(ResourceBundleConstant.USR_002, getMessageBundle(ResourceBundleConstant.USR_002));
         }
 
-        userRepo.save(
+        User userSave = userRepo.save(
                 User.builder()
                         .email(request.getEmail())
                         .password(passwordEncoder.encode(request.getPassword()))
@@ -57,22 +71,115 @@ public class UserServiceImpl implements IUserService {
                         .fullName(request.getFullName())
                         .phoneNumber(request.getPhoneNumber())
                         .address(request.getAddress())
-                        .status(SystemConstant.USER_ACTIVE)
+                        .isDeleted(SystemConstant.ACTIVE)
                         .build()
         );
+
+        return UserResponse.builder()
+                .code(ResourceBundleConstant.USR_005)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDtoMapper.apply(userSave))
+                .message(getMessageBundle(ResourceBundleConstant.USR_005))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 
     @Override
-    public List<UserDto> findAllUser() {
-        List<User> users = userRepo.findAll();
+    public UserResponse updateUser(UserUpdateRequest request) {
+        User user = getUser(request.getEmail());
 
-        return users.stream()
+        if (!user.getGender().equals(request.getGender())) {
+            user.setGender(request.getGender());
+        }
+
+        if (!user.getDateOfBirth().equals(request.getDateOfBirth())) {
+            user.setDateOfBirth(request.getDateOfBirth());
+        }
+
+        if (!user.getFullName().equals(request.getFullName())) {
+            user.setFullName(request.getFullName());
+        }
+
+        if (!user.getPhoneNumber().equals(request.getPhoneNumber())) {
+            user.setPhoneNumber(request.getPhoneNumber());
+        }
+
+        if (!user.getAddress().equals(request.getAddress())) {
+            user.setAddress(request.getAddress());
+        }
+
+        User userSave = userRepo.save(user);
+
+        return UserResponse.builder()
+                .code(ResourceBundleConstant.USR_003)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDtoMapper.apply(userSave))
+                .message(getMessageBundle(ResourceBundleConstant.USR_003))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    private User getUser(String email) {
+        return userRepo.findUserByEmail(email)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.USR_002, getMessageBundle(ResourceBundleConstant.USR_002)));
+    }
+
+    @Override
+    public UserResponse deleteUser(String email) {
+        User user = getUser(email);
+        user.setIsDeleted(SystemConstant.NO_ACTIVE);
+        User userSave = userRepo.save(user);
+
+        return UserResponse.builder()
+                .code(ResourceBundleConstant.USR_007)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDtoMapper.apply(userSave))
+                .message(getMessageBundle(ResourceBundleConstant.USR_007))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+
+    @Override
+    public UserResponses findAllUser(Integer currentPage, Integer limitPage) {
+        Page<User> all = userRepo.findAll(baseAmenityUtil.pageable(currentPage, limitPage));
+        List<UserDto> userDtos = all.stream()
                 .map(userDtoMapper)
                 .toList();
+
+        PageableResponse pageableResponse = baseAmenityUtil.pageableResponse(currentPage, limitPage, all.getTotalPages());
+
+        return UserResponses.builder()
+                .code(ResourceBundleConstant.USR_009)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDtos)
+                .meta(pageableResponse)
+                .message(getMessageBundle(ResourceBundleConstant.USR_009))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 
     @Override
-    public UserDto authenticated(UserLoginRequest request) {
+    public UserResponses findUsersByIsDeleted(Integer currentPage, Integer limitPage, Boolean isDeleted) {
+        Pageable pageable = baseAmenityUtil.pageable(currentPage, limitPage);
+        Page<User> users = userRepo.findUsersByIsDeleted(isDeleted, pageable);
+
+        List<UserDto> userDtos = users.stream()
+                .map(userDtoMapper)
+                .toList();
+
+        return UserResponses.builder()
+                .code(ResourceBundleConstant.USR_009)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDtos)
+                .meta(baseAmenityUtil.pageableResponse(currentPage, limitPage, users.getTotalPages()))
+                .message(getMessageBundle(ResourceBundleConstant.USR_009))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public UserResponse authenticated(UserLoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -80,14 +187,20 @@ public class UserServiceImpl implements IUserService {
                 )
         );
 
-        User user = userRepo.findUserByEmailAndStatus(request.getEmail(), SystemConstant.USER_ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
-
+        User user = userRepo.findUserByEmailAndIsDeleted(request.getEmail(), SystemConstant.ACTIVE)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.UD_002, getMessageBundle(ResourceBundleConstant.UD_002)));
         UserDto userDto = userDtoMapper.apply(user);
         var jwtToken = jwtService.generateToken(user);
         userDto.setJwtToken(jwtToken);
         saveUserToken(user, jwtToken);
-        return userDto;
+
+        return UserResponse.builder()
+                .code(ResourceBundleConstant.USR_011)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userDto)
+                .message(getMessageBundle(ResourceBundleConstant.USR_011))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 
     private void saveUserToken(User user, String jwtToken) {

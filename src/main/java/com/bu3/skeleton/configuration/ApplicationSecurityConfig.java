@@ -1,6 +1,7 @@
 package com.bu3.skeleton.configuration;
 
 import com.bu3.skeleton.constant.SystemConstant;
+import com.bu3.skeleton.constant.UserConstant;
 import com.bu3.skeleton.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,13 +38,14 @@ public class ApplicationSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(SystemConstant.API_PUBLIC).permitAll()
+                        .requestMatchers(SystemConstant.API_PUBLIC + "/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
-                        .logoutUrl("/api/user/logout")
+                        .logoutUrl(SystemConstant.API_PUBLIC + SystemConstant.VERSION_1 + UserConstant.API_USER + SystemConstant.API_USER_LOGOUT)
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );
@@ -57,7 +59,7 @@ public class ApplicationSecurityConfig {
         //Make the below setting as * to allow connection from any hos
         corsConfiguration.setAllowedOrigins(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowCredentials(false);
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -1,24 +1,31 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.UserRoleDto;
-import com.bu3.skeleton.dto.request.UserRoleRequest;
+import com.bu3.skeleton.dto.request.userrole.UserRoleAddRequest;
+import com.bu3.skeleton.dto.request.userrole.UserRoleUpdateRequest;
+import com.bu3.skeleton.dto.response.PageableResponse;
+import com.bu3.skeleton.dto.response.userrole.UserRoleResponse;
+import com.bu3.skeleton.dto.response.userrole.UserRoleResponses;
 import com.bu3.skeleton.entity.Role;
 import com.bu3.skeleton.entity.User;
 import com.bu3.skeleton.entity.UserRole;
-import com.bu3.skeleton.exception.ResourceNotFoundException;
+import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.UserRoleDtoMapper;
 import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.repository.IUserRepo;
 import com.bu3.skeleton.repository.IUserRoleRepo;
 import com.bu3.skeleton.sevice.IUserRoleService;
+import com.bu3.skeleton.util.BaseAmenityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -33,28 +40,104 @@ public class UserRoleServiceImpl implements IUserRoleService {
 
     private final UserRoleDtoMapper userRoleDtoMapper;
 
-    @Override
-    public void addUserRole(UserRoleRequest request) {
-        Role role = roleRepo.findRoleByRoleName(request.getRoleName())
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
+    private final BaseAmenityUtil baseAmenityUtil;
 
-        User user = userRepo.findUserByEmailAndStatus(request.getEmail(), SystemConstant.USER_ACTIVE)
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
 
-        userRoleRepo.save(
-                UserRole.builder()
-                        .role(role)
-                        .user(user)
-                        .build()
-        );
+    private User getUser(String email) {
+        return userRepo.findUserByEmailAndIsDeleted(email, SystemConstant.ACTIVE)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.USR_002, getMessageBundle(ResourceBundleConstant.USR_002)));
+    }
+
+    private Role getRole(UUID roleId) {
+        return roleRepo.findById(roleId)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.RL_002, getMessageBundle(ResourceBundleConstant.RL_002)));
+    }
+
+    private UserRole getUserRole(UUID userRoleId) {
+        return userRoleRepo.findById(userRoleId)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.USR_R_002, getMessageBundle(ResourceBundleConstant.USR_R_002)));
     }
 
     @Override
-    public List<UserRoleDto> findAllUserRole() {
-        List<UserRole> all = userRoleRepo.findAll();
+    public UserRoleResponse addUserRole(UserRoleAddRequest request) {
+        Role role = getRole(request.getRoleId());
 
-        return all.stream()
+        User user = getUser(request.getEmail());
+
+        UserRole userRole = userRoleRepo.save(
+                UserRole.builder()
+                        .role(role)
+                        .user(user)
+                        .isDeleted(SystemConstant.ACTIVE)
+                        .build()
+        );
+
+        return UserRoleResponse.builder()
+                .code(ResourceBundleConstant.USR_005)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userRoleDtoMapper.apply(userRole))
+                .message(getMessageBundle(ResourceBundleConstant.USR_005))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public UserRoleResponse updateUserRole(UserRoleUpdateRequest request) {
+        UserRole userRole = getUserRole(request.getUserRoleId());
+
+        Role role = getRole(request.getRoleId());
+        User user = getUser(request.getEmail());
+
+        userRole.setRole(role);
+        userRole.setUser(user);
+
+        userRoleRepo.save(userRole);
+        return UserRoleResponse.builder()
+                .code(ResourceBundleConstant.USR_R_007)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userRoleDtoMapper.apply(userRole))
+                .message(getMessageBundle(ResourceBundleConstant.USR_R_007))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public UserRoleResponse deleteUserRole(UUID userRoleId) {
+        UserRole userRole = getUserRole(userRoleId);
+
+        userRole.setIsDeleted(SystemConstant.NO_ACTIVE);
+        UserRole userRoleSave = userRoleRepo.save(userRole);
+
+        return UserRoleResponse.builder()
+                .code(ResourceBundleConstant.USR_R_009)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userRoleDtoMapper.apply(userRoleSave))
+                .message(getMessageBundle(ResourceBundleConstant.USR_R_009))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public UserRoleResponses findAllUserRole(Integer currentPage, Integer limitPage) {
+        Pageable pageable = baseAmenityUtil.pageable(currentPage, limitPage);
+        Page<UserRole> all = userRoleRepo.findAll(pageable);
+
+        List<UserRoleDto> userRoleDtos = all.stream()
                 .map(userRoleDtoMapper)
                 .toList();
+
+        PageableResponse pageableResponse = baseAmenityUtil.pageableResponse(currentPage, limitPage, all.getTotalPages());
+
+        return UserRoleResponses.builder()
+                .code(ResourceBundleConstant.USR_R_011)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(userRoleDtos)
+                .meta(pageableResponse)
+                .message(getMessageBundle(ResourceBundleConstant.USR_R_011))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 }

@@ -18,4 +18,6 @@ public class UserRoleDto {
     private String email;
 
     private String fullName;
+
+    private Boolean isDeleted;
 }

@@ -1,22 +1,21 @@
 package com.bu3.skeleton.entity;
 
-import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'amenity_hotel'")
+@Table(name = "`amenity_hotel`")
 @Entity
 public class AmenityHotel extends BaseEntity {
 
@@ -30,8 +29,6 @@ public class AmenityHotel extends BaseEntity {
     private String parentId;
 
     private String languageCode;
-
-    private Boolean isDeleted;
 
     private String description;
 }

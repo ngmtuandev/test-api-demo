@@ -14,6 +14,7 @@ public class PermissionDtoMapper implements Function<Permission, PermissionDto> 
         return PermissionDto.builder()
                 .permissionId(permission.getId())
                 .permissionCode(permission.getPermissionCode())
+                .isDeleted(permission.getIsDeleted())
                 .description(permission.getDescription())
                 .build();
     }

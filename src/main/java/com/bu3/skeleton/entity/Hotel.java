@@ -1,28 +1,26 @@
 package com.bu3.skeleton.entity;
 
 import com.bu3.skeleton.enums.HotelStatus;
-import com.bu3.skeleton.util.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OneToMany;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "'hotel'")
+@Table(name = "`hotel`")
 @Entity
 public class Hotel extends BaseEntity {
 

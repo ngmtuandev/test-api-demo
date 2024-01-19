@@ -14,6 +14,7 @@ public class PermissionGroupDtoMapper implements Function<PermissionGroup, Permi
         return PermissionGroupDto.builder()
                 .permissionGroupId(permissionGroup.getId())
                 .permissionGroupName(permissionGroup.getPermissionGroupName())
+                .isDeleted(permissionGroup.getIsDeleted())
                 .description(permissionGroup.getDescription())
                 .build();
     }

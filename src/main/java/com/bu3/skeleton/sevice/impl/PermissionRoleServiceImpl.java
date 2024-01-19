@@ -1,19 +1,25 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
-import com.bu3.skeleton.constant.TransitionCode;
-import com.bu3.skeleton.dto.request.PermissionRoleRequest;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
+import com.bu3.skeleton.constant.SystemConstant;
+import com.bu3.skeleton.dto.request.permissionrole.PermissionRoleRequest;
+import com.bu3.skeleton.dto.response.permissionrole.PermissionRoleResponse;
+import com.bu3.skeleton.dto.response.permissionrole.PermissionRoleResponses;
 import com.bu3.skeleton.entity.Permission;
 import com.bu3.skeleton.entity.PermissionRole;
 import com.bu3.skeleton.entity.Role;
-import com.bu3.skeleton.exception.ResourceNotFoundException;
+import com.bu3.skeleton.exception.ApiRequestException;
+import com.bu3.skeleton.mapper.PermissionRoleDtoMapper;
 import com.bu3.skeleton.repository.IPermissionRepo;
 import com.bu3.skeleton.repository.IPermissionRoleRepo;
 import com.bu3.skeleton.repository.IRoleRepo;
 import com.bu3.skeleton.sevice.IPermissionRoleService;
+import com.bu3.skeleton.util.BaseAmenityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -26,19 +32,73 @@ public class PermissionRoleServiceImpl implements IPermissionRoleService {
 
     private final IRoleRepo roleRepo;
 
+    private final PermissionRoleDtoMapper permissionRoleDtoMapper;
+
+    private final BaseAmenityUtil baseAmenityUtil;
+
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
+
+    private Permission getPermission(UUID permissionId) {
+        return permissionRepo.findById(permissionId)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.PMS_002, getMessageBundle(ResourceBundleConstant.PMS_002)));
+    }
+
+    private Role getRole(UUID roleId) {
+        return roleRepo.findById(roleId)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.RL_002, getMessageBundle(ResourceBundleConstant.RL_002)));
+    }
+
     @Override
-    public void addPermissionRole(PermissionRoleRequest request) {
-        Role role = roleRepo.findRoleByRoleName(request.getRoleName())
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
+    public PermissionRoleResponse addPermissionRole(PermissionRoleRequest request) {
+        Role role = getRole(request.getRoleId());
 
-        Permission permission = permissionRepo.findPermissionByPermissionCode(request.getPermissionCode())
-                .orElseThrow(() -> new ResourceNotFoundException(Translator.toLocale(TransitionCode.PERMISSION_FIND_NOT_FOUND)));
+        Permission permission = getPermission(request.getPermissionId());
 
-        permissionRoleRepo.save(
+        PermissionRole permissionRole = permissionRoleRepo.save(
                 PermissionRole.builder()
                         .permission(permission)
                         .role(role)
                         .build()
         );
+
+        return PermissionRoleResponse.builder()
+                .code(ResourceBundleConstant.PMSR_005)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionRoleDtoMapper.apply(permissionRole))
+                .message(getMessageBundle(ResourceBundleConstant.PMSR_005))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public PermissionRoleResponse updatePermissionRole(PermissionRoleRequest request) {
+        PermissionRole permissionRole = permissionRoleRepo.findById(request.getPermissionId())
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.PMSR_002, getMessageBundle(ResourceBundleConstant.PMSR_002)));
+        Role role = getRole(request.getRoleId());
+        Permission permission = getPermission(request.getPermissionId());
+
+        permissionRole.setPermission(permission);
+        permissionRole.setRole(role);
+
+        PermissionRole permissionRoleSave = permissionRoleRepo.save(permissionRole);
+        return PermissionRoleResponse.builder()
+                .code(ResourceBundleConstant.PMSR_003)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionRoleDtoMapper.apply(permissionRoleSave))
+                .message(getMessageBundle(ResourceBundleConstant.PMSR_003))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public PermissionRoleResponse deletePermissionRole(PermissionRoleRequest request) {
+        return null;
+    }
+
+    @Override
+    public PermissionRoleResponses findAllPermissionRole(PermissionRoleRequest request) {
+        return null;
     }
 }

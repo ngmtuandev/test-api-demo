@@ -1,13 +1,19 @@
 package com.bu3.skeleton.sevice;
 
-import com.bu3.skeleton.dto.PermissionDto;
-import com.bu3.skeleton.dto.request.PermissionRequest;
+import com.bu3.skeleton.dto.request.permission.PermissionRequest;
+import com.bu3.skeleton.dto.request.permission.PermissionUpdateRequest;
+import com.bu3.skeleton.dto.response.permission.PermissionResponse;
+import com.bu3.skeleton.dto.response.permission.PermissionResponses;
 
-import java.util.List;
+import java.util.UUID;
 
 public interface IPermissionService {
 
-    void addPermission(PermissionRequest request);
+    PermissionResponse addPermission(PermissionRequest request);
 
-    List<PermissionDto> findAllPermission();
+    PermissionResponse updatePermission(PermissionUpdateRequest request);
+
+    PermissionResponse deletePermission(UUID permissionId);
+
+    PermissionResponses findAllPermission(Integer currentPage, Integer litMitPage);
 }

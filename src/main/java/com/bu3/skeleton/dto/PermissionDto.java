@@ -15,6 +15,8 @@ public class PermissionDto {
 
     private String permissionCode;
 
+    private Boolean isDeleted;
+
     private String description;
 
 }
