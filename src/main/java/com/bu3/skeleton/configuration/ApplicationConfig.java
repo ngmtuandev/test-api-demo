@@ -1,8 +1,9 @@
 package com.bu3.skeleton.configuration;
 
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.repository.IUserRepo;
+import com.bu3.skeleton.util.BaseAmenityUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -23,6 +24,8 @@ public class ApplicationConfig {
 
     private final IUserRepo userRepo;
 
+    private final BaseAmenityUtil baseAmenityUtil;
+
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
@@ -34,7 +37,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> userRepo.findUserByEmailAndIsDeleted(email, SystemConstant.ACTIVE)
-                .orElseThrow(() -> new UsernameNotFoundException(Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
+                .orElseThrow(() -> new UsernameNotFoundException(baseAmenityUtil.getMessageBundle(ResourceBundleConstant.USR_002)));
     }
 
     @Bean

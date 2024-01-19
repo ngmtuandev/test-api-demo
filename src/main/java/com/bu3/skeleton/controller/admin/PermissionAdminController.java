@@ -4,6 +4,7 @@ import com.bu3.skeleton.constant.PermissionConstant;
 import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.dto.request.permission.PermissionRequest;
 import com.bu3.skeleton.dto.request.permission.PermissionUpdateRequest;
+import com.bu3.skeleton.dto.response.permission.PermissionResponse;
 import com.bu3.skeleton.dto.response.permission.PermissionResponses;
 import com.bu3.skeleton.sevice.IPermissionService;
 import jakarta.validation.Valid;
@@ -38,22 +39,19 @@ public class PermissionAdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addPermission(@RequestBody PermissionRequest request) {
-        permissionService.addPermission(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<PermissionResponse> addPermission(@RequestBody PermissionRequest request) {
+        return new ResponseEntity<>(permissionService.addPermission(request), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<?> updatePermission(
+    public ResponseEntity<PermissionResponse> updatePermission(
             @Valid @RequestBody PermissionUpdateRequest request
     ) {
-        permissionService.updatePermission(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(permissionService.updatePermission(request), HttpStatus.OK);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deletePermission(@RequestParam("permissionId") UUID permissionId) {
-        permissionService.deletePermission(permissionId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<PermissionResponse> deletePermission(@RequestParam("permissionId") UUID permissionId) {
+        return new ResponseEntity<>(permissionService.deletePermission(permissionId), HttpStatus.OK);
     }
 }

@@ -1,8 +1,7 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionGroupDto;
 import com.bu3.skeleton.dto.request.permissiongroup.PermissionGroupRequest;
 import com.bu3.skeleton.dto.response.PageableResponse;
@@ -37,17 +36,19 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
 
     private final ObjectMapper objectMapper;
 
-    private final BaseAmenityUtil baseAmenity;
+    private final BaseAmenityUtil baseAmenityUtil;
 
     private final PermissionGroupDtoMapper permissionGroupDtoMapper;
-    private final String permissionGroupCode = Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE);
-
     private final Logger logger = LoggerFactory.getLogger(PermissionGroupServiceImpl.class);
+
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
 
     @Override
     public PermissionGroupResponse addPermissionGroup(PermissionGroupRequest request) {
         if (permissionGroupRepo.existsByPermissionGroupName(request.getPermissionGroupName())) {
-            throw new ApiRequestException(permissionGroupCode, Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
+            throw new ApiRequestException(ResourceBundleConstant.PMSG_011, getMessageBundle(ResourceBundleConstant.PMSG_011));
         }
 
         PermissionGroup permissionGroup = permissionGroupRepo.save(
@@ -59,18 +60,18 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
         );
 
         return PermissionGroupResponse.builder()
-                .code(permissionGroupCode)
+                .code(ResourceBundleConstant.PMSG_005)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionGroupDtoMapper.apply(permissionGroup))
-                .message(Translator.toLocale(TransitionCode.ADD_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .message(getMessageBundle(ResourceBundleConstant.PMSG_005))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
     @Override
     public PermissionGroupResponse updatePermissionGroup(PermissionGroupRequest request) {
         if (permissionGroupRepo.existsByPermissionGroupNameNot(request.getPermissionGroupName())) {
-            throw new ApiRequestException(permissionGroupCode, Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS));
+            throw new ApiRequestException(ResourceBundleConstant.PMSG_011, getMessageBundle(ResourceBundleConstant.PMSG_011));
         }
 
         PermissionGroup permissionGroup = getPermissionGroup(request.getPermissionGroupName());
@@ -86,40 +87,40 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
         PermissionGroup permissionGroupSave = permissionGroupRepo.save(permissionGroup);
 
         return PermissionGroupResponse.builder()
-                .code(permissionGroupCode)
+                .code(ResourceBundleConstant.PMSG_003)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionGroupDtoMapper.apply(permissionGroupSave))
-                .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .message(getMessageBundle(ResourceBundleConstant.PMSG_003))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
     private PermissionGroup getPermissionGroup(String permissionGroupName) {
         return permissionGroupRepo.findPermissionGroupByPermissionGroupName(permissionGroupName)
-                .orElseThrow(() -> new ApiRequestException(permissionGroupCode, Translator.toLocale(TransitionCode.PERMISSION_GROUP_EXISTS)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.PMSG_002, getMessageBundle(ResourceBundleConstant.PMSG_002)));
     }
 
     @Override
     public PermissionGroupResponse deletePermissionGroup(String permissionGroupName) {
         if (permissionGroupRepo == null) {
-            throw new ApiRequestException(Translator.toLocale(permissionGroupCode), Translator.toLocale(TransitionCode.NOT_FOUND));
+            throw new ApiRequestException(ResourceBundleConstant.PMSG_002, getMessageBundle(ResourceBundleConstant.PMSG_002));
         }
         PermissionGroup permissionGroup = getPermissionGroup(permissionGroupName);
         permissionGroup.setIsDeleted(false);
         PermissionGroup permissionGroupSave = permissionGroupRepo.save(permissionGroup);
 
         return PermissionGroupResponse.builder()
-                .code(permissionGroupCode)
+                .code(ResourceBundleConstant.PMSG_007)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionGroupDtoMapper.apply(permissionGroupSave))
-                .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .message(getMessageBundle(ResourceBundleConstant.PMSG_007))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
     @Override
     public PermissionGroupResponses findAllPermissionGroup(int currentPage, int limitPage) {
-        Pageable pageable = baseAmenity.pageable(currentPage, limitPage);
+        Pageable pageable = baseAmenityUtil.pageable(currentPage, limitPage);
         Page<PermissionGroup> all = permissionGroupRepo.findAll(pageable);
 //        try {
 //            redisTemplate.opsForValue().getOperations().delete("ca");
@@ -150,15 +151,15 @@ public class PermissionGroupServiceImpl implements IPermissionGroupService {
                 .map(permissionGroupDtoMapper)
                 .toList();
 
-        PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
+        PageableResponse pageableResponse = baseAmenityUtil.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return PermissionGroupResponses.builder()
-                .code(permissionGroupCode)
+                .code(ResourceBundleConstant.PMSG_009)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionGroupDtos)
                 .meta(pageableResponse)
-                .message(Translator.toLocale(TransitionCode.PERMISSION_GROUP_FIND_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .message(getMessageBundle(ResourceBundleConstant.PMSG_009))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
 
     }

@@ -1,8 +1,7 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.UserRoleDto;
 import com.bu3.skeleton.dto.request.userrole.UserRoleAddRequest;
 import com.bu3.skeleton.dto.request.userrole.UserRoleUpdateRequest;
@@ -43,18 +42,23 @@ public class UserRoleServiceImpl implements IUserRoleService {
 
     private final BaseAmenityUtil baseAmenityUtil;
 
-    private final String userRoleCode = Translator.toLocale(TransitionCode.USER_ROLE_CODE);
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
 
     private User getUser(String email) {
         return userRepo.findUserByEmailAndIsDeleted(email, SystemConstant.ACTIVE)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.USER_CODE),
-                        Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.USR_002, getMessageBundle(ResourceBundleConstant.USR_002)));
     }
 
     private Role getRole(UUID roleId) {
         return roleRepo.findById(roleId)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
-                        Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.RL_002, getMessageBundle(ResourceBundleConstant.RL_002)));
+    }
+
+    private UserRole getUserRole(UUID userRoleId) {
+        return userRoleRepo.findById(userRoleId)
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.USR_R_002, getMessageBundle(ResourceBundleConstant.USR_R_002)));
     }
 
     @Override
@@ -72,18 +76,17 @@ public class UserRoleServiceImpl implements IUserRoleService {
         );
 
         return UserRoleResponse.builder()
-                .code(userRoleCode)
+                .code(ResourceBundleConstant.USR_005)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userRoleDtoMapper.apply(userRole))
-                .message(Translator.toLocale(TransitionCode.ADD_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_005))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
     @Override
     public UserRoleResponse updateUserRole(UserRoleUpdateRequest request) {
-        UserRole userRole = userRoleRepo.findById(request.getUserRoleId())
-                .orElseThrow(() -> new ApiRequestException(userRoleCode, Translator.toLocale(TransitionCode.NOT_FOUND)));
+        UserRole userRole = getUserRole(request.getUserRoleId());
 
         Role role = getRole(request.getRoleId());
         User user = getUser(request.getEmail());
@@ -93,27 +96,26 @@ public class UserRoleServiceImpl implements IUserRoleService {
 
         userRoleRepo.save(userRole);
         return UserRoleResponse.builder()
-                .code(userRoleCode)
+                .code(ResourceBundleConstant.USR_R_007)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userRoleDtoMapper.apply(userRole))
-                .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_R_007))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
     @Override
     public UserRoleResponse deleteUserRole(UUID userRoleId) {
-        UserRole userRole = userRoleRepo.findById(userRoleId)
-                .orElseThrow(() -> new ApiRequestException(userRoleCode, Translator.toLocale(TransitionCode.USER_ROLE_NOT_FOUND)));
+        UserRole userRole = getUserRole(userRoleId);
 
         userRole.setIsDeleted(SystemConstant.NO_ACTIVE);
         UserRole userRoleSave = userRoleRepo.save(userRole);
 
         return UserRoleResponse.builder()
-                .code(userRoleCode)
+                .code(ResourceBundleConstant.USR_R_009)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userRoleDtoMapper.apply(userRoleSave))
-                .message(Translator.toLocale(TransitionCode.DELETE_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_R_009))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
@@ -130,11 +132,11 @@ public class UserRoleServiceImpl implements IUserRoleService {
         PageableResponse pageableResponse = baseAmenityUtil.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return UserRoleResponses.builder()
-                .code(userRoleCode)
+                .code(ResourceBundleConstant.USR_R_011)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userRoleDtos)
                 .meta(pageableResponse)
-                .message(Translator.toLocale(TransitionCode.GET_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_R_011))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }

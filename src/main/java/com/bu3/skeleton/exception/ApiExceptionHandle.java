@@ -1,8 +1,7 @@
 package com.bu3.skeleton.exception;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.util.BaseAmenityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -50,7 +49,7 @@ public class ApiExceptionHandle {
 
         HttpStatus internalServerError = HttpStatus.INTERNAL_SERVER_ERROR;
         ApiException exception = new ApiException(
-                Translator.toLocale(TransitionCode.ERROR_SERVER),
+                baseAmenity.getMessageBundle(ResourceBundleConstant.ERROR_SERVER),
                 SystemConstant.STATUS_CODE_INTERNAL,
                 extractErrorCode(e.getMessage()),
                 baseAmenity.currentTimeSeconds()
@@ -62,7 +61,7 @@ public class ApiExceptionHandle {
     public ResponseEntity<Object> handleException(Exception e) {
         HttpStatus internalServerError = HttpStatus.INTERNAL_SERVER_ERROR;
         ApiException exception = new ApiException(
-                Translator.toLocale(TransitionCode.ERROR_SERVER),
+                baseAmenity.getMessageBundle(ResourceBundleConstant.ERROR_SERVER),
                 SystemConstant.STATUS_CODE_INTERNAL,
                 e.getMessage(),
                 baseAmenity.currentTimeSeconds()
@@ -81,7 +80,7 @@ public class ApiExceptionHandle {
                     .toList();
         }
         ApiException exception = new ApiException(
-                Translator.toLocale(TransitionCode.ERROR_VALIDATION_FIELD),
+                baseAmenity.getMessageBundle(ResourceBundleConstant.ERROR_VALIDATION_FIELD),
                 SystemConstant.STATUS_CODE_BAD_REQUEST,
                 listError.toString(),
                 baseAmenity.currentTimeSeconds()

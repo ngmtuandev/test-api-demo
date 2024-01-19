@@ -1,8 +1,7 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.UserDto;
 import com.bu3.skeleton.dto.request.user.UserAddRequest;
 import com.bu3.skeleton.dto.request.user.UserLoginRequest;
@@ -49,18 +48,20 @@ public class UserServiceImpl implements IUserService {
 
     private final ITokenRepo tokenRepo;
 
-    private final BaseAmenityUtil baseAmenityUtil;
-
     private final IRoleRepo roleRepo;
 
-    private final String userCode = Translator.toLocale(TransitionCode.USER_CODE);
+    private final BaseAmenityUtil baseAmenityUtil;
+
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
 
     @Override
     public UserResponse addUser(UserAddRequest request) {
         if (userRepo.existsByEmail(request.getEmail())) {
-            throw new ApiRequestException(userCode,
-                    Translator.toLocale(TransitionCode.EMAIL_DUPLICATE));
+            throw new ApiRequestException(ResourceBundleConstant.USR_002, getMessageBundle(ResourceBundleConstant.USR_002));
         }
+
         User userSave = userRepo.save(
                 User.builder()
                         .email(request.getEmail())
@@ -75,10 +76,10 @@ public class UserServiceImpl implements IUserService {
         );
 
         return UserResponse.builder()
-                .code(userCode)
+                .code(ResourceBundleConstant.USR_005)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtoMapper.apply(userSave))
-                .message(Translator.toLocale(TransitionCode.ADD_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_005))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
@@ -110,17 +111,17 @@ public class UserServiceImpl implements IUserService {
         User userSave = userRepo.save(user);
 
         return UserResponse.builder()
-                .code(userCode)
+                .code(ResourceBundleConstant.USR_003)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtoMapper.apply(userSave))
-                .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_003))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 
     private User getUser(String email) {
         return userRepo.findUserByEmail(email)
-                .orElseThrow(() -> new ApiRequestException(userCode, Translator.toLocale(TransitionCode.USER_FIND_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.USR_002, getMessageBundle(ResourceBundleConstant.USR_002)));
     }
 
     @Override
@@ -130,10 +131,10 @@ public class UserServiceImpl implements IUserService {
         User userSave = userRepo.save(user);
 
         return UserResponse.builder()
-                .code(userCode)
+                .code(ResourceBundleConstant.USR_007)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtoMapper.apply(userSave))
-                .message(Translator.toLocale(TransitionCode.DELETE_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_007))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
@@ -149,11 +150,11 @@ public class UserServiceImpl implements IUserService {
         PageableResponse pageableResponse = baseAmenityUtil.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return UserResponses.builder()
-                .code(userCode)
-                .status(200)
+                .code(ResourceBundleConstant.USR_009)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtos)
                 .meta(pageableResponse)
-                .message(Translator.toLocale(TransitionCode.USER_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_009))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
@@ -168,11 +169,11 @@ public class UserServiceImpl implements IUserService {
                 .toList();
 
         return UserResponses.builder()
-                .code(userCode)
+                .code(ResourceBundleConstant.USR_009)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDtos)
                 .meta(baseAmenityUtil.pageableResponse(currentPage, limitPage, users.getTotalPages()))
-                .message(Translator.toLocale(TransitionCode.GET_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_009))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
@@ -187,18 +188,17 @@ public class UserServiceImpl implements IUserService {
         );
 
         User user = userRepo.findUserByEmailAndIsDeleted(request.getEmail(), SystemConstant.ACTIVE)
-                .orElseThrow(() -> new ApiRequestException(userCode,
-                        Translator.toLocale(TransitionCode.NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.UD_002, getMessageBundle(ResourceBundleConstant.UD_002)));
         UserDto userDto = userDtoMapper.apply(user);
         var jwtToken = jwtService.generateToken(user);
         userDto.setJwtToken(jwtToken);
         saveUserToken(user, jwtToken);
 
         return UserResponse.builder()
-                .code(Translator.toLocale(TransitionCode.USER_CODE))
+                .code(ResourceBundleConstant.USR_011)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(userDto)
-                .message(Translator.toLocale(TransitionCode.USER_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.USR_011))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }

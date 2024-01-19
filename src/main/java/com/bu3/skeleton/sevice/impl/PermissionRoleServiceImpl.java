@@ -1,8 +1,7 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.request.permissionrole.PermissionRoleRequest;
 import com.bu3.skeleton.dto.response.permissionrole.PermissionRoleResponse;
 import com.bu3.skeleton.dto.response.permissionrole.PermissionRoleResponses;
@@ -37,19 +36,18 @@ public class PermissionRoleServiceImpl implements IPermissionRoleService {
 
     private final BaseAmenityUtil baseAmenityUtil;
 
-    private final String permissionRoleCode = Translator.toLocale(TransitionCode.PERMISSION_ROLE_CODE);
-
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
 
     private Permission getPermission(UUID permissionId) {
         return permissionRepo.findById(permissionId)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_CODE),
-                        Translator.toLocale(TransitionCode.PERMISSION_FIND_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.PMS_002, getMessageBundle(ResourceBundleConstant.PMS_002)));
     }
 
     private Role getRole(UUID roleId) {
         return roleRepo.findById(roleId)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
-                        Translator.toLocale(TransitionCode.FIND_ROLE_BY_ROLE_NAME_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.RL_002, getMessageBundle(ResourceBundleConstant.RL_002)));
     }
 
     @Override
@@ -66,10 +64,10 @@ public class PermissionRoleServiceImpl implements IPermissionRoleService {
         );
 
         return PermissionRoleResponse.builder()
-                .code(permissionRoleCode)
+                .code(ResourceBundleConstant.PMSR_005)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionRoleDtoMapper.apply(permissionRole))
-                .message(Translator.toLocale(TransitionCode.ADD_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.PMSR_005))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
@@ -77,7 +75,7 @@ public class PermissionRoleServiceImpl implements IPermissionRoleService {
     @Override
     public PermissionRoleResponse updatePermissionRole(PermissionRoleRequest request) {
         PermissionRole permissionRole = permissionRoleRepo.findById(request.getPermissionId())
-                .orElseThrow(() -> new ApiRequestException(permissionRoleCode, Translator.toLocale(TransitionCode.GET_SUCCESS)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.PMSR_002, getMessageBundle(ResourceBundleConstant.PMSR_002)));
         Role role = getRole(request.getRoleId());
         Permission permission = getPermission(request.getPermissionId());
 
@@ -86,10 +84,10 @@ public class PermissionRoleServiceImpl implements IPermissionRoleService {
 
         PermissionRole permissionRoleSave = permissionRoleRepo.save(permissionRole);
         return PermissionRoleResponse.builder()
-                .code(permissionRoleCode)
+                .code(ResourceBundleConstant.PMSR_003)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionRoleDtoMapper.apply(permissionRoleSave))
-                .message(Translator.toLocale(TransitionCode.UPDATE_SUCCESS))
+                .message(getMessageBundle(ResourceBundleConstant.PMSR_003))
                 .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }

@@ -3,6 +3,7 @@ package com.bu3.skeleton.controller.admin;
 import com.bu3.skeleton.constant.PermissionRoleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.dto.request.permissionrole.PermissionRoleRequest;
+import com.bu3.skeleton.dto.response.permissionrole.PermissionRoleResponse;
 import com.bu3.skeleton.sevice.IPermissionRoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,9 @@ public class PermissionRoleAdminController {
     private final IPermissionRoleService permissionRoleService;
 
     @PostMapping
-    public ResponseEntity<?> addPermissionRole(
+    public ResponseEntity<PermissionRoleResponse> addPermissionRole(
             @Valid @RequestBody PermissionRoleRequest request
     ) {
-        permissionRoleService.addPermissionRole(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(permissionRoleService.addPermissionRole(request), HttpStatus.CREATED);
     }
 }

@@ -1,11 +1,11 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.RoleDto;
 import com.bu3.skeleton.dto.request.role.RoleAddRequest;
 import com.bu3.skeleton.dto.response.role.RoleResponse;
+import com.bu3.skeleton.dto.response.role.RoleResponses;
 import com.bu3.skeleton.entity.Role;
 import com.bu3.skeleton.exception.ApiRequestException;
 import com.bu3.skeleton.mapper.RoleDtoMapper;
@@ -28,40 +28,42 @@ public class RoleServiceImpl implements IRoleService {
 
     private final RoleDtoMapper roleDtoMapper;
 
-    private final BaseAmenityUtil baseAmenity;
+    private final BaseAmenityUtil baseAmenityUtil;
 
-    private final String roleCode = Translator.toLocale(TransitionCode.ROLE_CODE);
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
 
     @Override
-    public void addRole(RoleAddRequest request) {
+    public RoleResponse addRole(RoleAddRequest request) {
         if (roleRepo.existsByRoleName(request.getRoleName())) {
-            throw new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
-                    Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
+            throw new ApiRequestException(ResourceBundleConstant.RL_002, getMessageBundle(ResourceBundleConstant.RL_002));
         }
 
-        roleRepo.save(
+        Role role = roleRepo.save(
                 Role.builder()
                         .roleName(request.getRoleName())
                         .roleCode(request.getRoleCode())
                         .isDeleted(SystemConstant.ACTIVE)
                         .build()
         );
+
+        return RoleResponse.builder()
+                .code(ResourceBundleConstant.RL_007)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(roleDtoMapper.apply(role))
+                .message(getMessageBundle(ResourceBundleConstant.RL_007))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 
     @Override
-    public void updateRole(RoleAddRequest request) {
+    public RoleResponse updateRole(RoleAddRequest request) {
         Role role = roleRepo.findRoleByRoleName(request.getRoleName())
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
-                        Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.RL_002, getMessageBundle(ResourceBundleConstant.RL_002)));
 
         if (roleRepo.existsByRoleName(request.getRoleName())) {
-            throw new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
-                    Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
-        }
-
-        if (roleRepo.existsByRoleName(request.getRoleName())) {
-            throw new ApiRequestException(Translator.toLocale(TransitionCode.ROLE_CODE),
-                    Translator.toLocale(TransitionCode.ROLE_NAME_EXISTS));
+            throw new ApiRequestException(ResourceBundleConstant.RL_004, getMessageBundle(ResourceBundleConstant.RL_004));
         }
 
         if (!role.getRoleName().equals(request.getRoleName())) {
@@ -72,24 +74,44 @@ public class RoleServiceImpl implements IRoleService {
             role.setRoleCode(request.getRoleCode());
         }
 
-        roleRepo.save(role);
+        Role roleSave = roleRepo.save(role);
+
+        return RoleResponse.builder()
+                .code(ResourceBundleConstant.RL_005)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(roleDtoMapper.apply(roleSave))
+                .message(getMessageBundle(ResourceBundleConstant.RL_005))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
+    }
+
+    @Override
+    public RoleResponse deleteRole(RoleAddRequest request) {
+        return null;
     }
 
     @Override
     public RoleResponse findById(UUID roleId) {
         roleRepo.findById(roleId)
-                .orElseThrow(() -> new ApiRequestException(roleCode,
-                        Translator.toLocale(TransitionCode.NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.RL_002, getMessageBundle(ResourceBundleConstant.RL_002)));
         return null;
     }
 
     @Override
-    public List<RoleDto> findAllRole() {
+    public RoleResponses findAllRole() {
         List<Role> all = roleRepo.findAll();
 
-        return all.stream()
+        List<RoleDto> roleDtos = all.stream()
                 .map(roleDtoMapper)
                 .toList();
+
+        return RoleResponses.builder()
+                .code(ResourceBundleConstant.RL_011)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(roleDtos)
+                .message(getMessageBundle(ResourceBundleConstant.RL_011))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 }
 

@@ -58,7 +58,7 @@ public class SkeletonServiceApplication {
             Role role = roleRepo.save(
                     Role.builder()
                             .roleName("ADMIN")
-                            .roleName("admin:demo")
+                            .roleCode("admin:demo")
                             .isDeleted(SystemConstant.ACTIVE)
                             .build()
             );

@@ -1,12 +1,12 @@
 package com.bu3.skeleton.sevice.impl;
 
-import com.bu3.skeleton.configuration.Translator;
+import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
-import com.bu3.skeleton.constant.TransitionCode;
 import com.bu3.skeleton.dto.PermissionDto;
 import com.bu3.skeleton.dto.request.permission.PermissionRequest;
 import com.bu3.skeleton.dto.request.permission.PermissionUpdateRequest;
 import com.bu3.skeleton.dto.response.PageableResponse;
+import com.bu3.skeleton.dto.response.permission.PermissionResponse;
 import com.bu3.skeleton.dto.response.permission.PermissionResponses;
 import com.bu3.skeleton.entity.Permission;
 import com.bu3.skeleton.entity.PermissionGroup;
@@ -36,38 +36,45 @@ public class PermissionServiceImpl implements IPermissionService {
 
     private final IPermissionGroupRepo permissionGroupRepo;
 
-    private final BaseAmenityUtil baseAmenity;
+    private final BaseAmenityUtil baseAmenityUtil;
 
-    private final String permissionCode = Translator.toLocale(TransitionCode.PERMISSION_CODE);
-
+    private String getMessageBundle(String key) {
+        return baseAmenityUtil.getMessageBundle(key);
+    }
 
     private Permission getPermission(UUID permissionId) {
         return permissionRepo.findById(permissionId)
-                .orElseThrow(() -> new ApiRequestException(permissionCode,
-                        Translator.toLocale(TransitionCode.PERMISSION_FIND_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.PMS_002, getMessageBundle(ResourceBundleConstant.PMS_002)));
     }
 
     private PermissionGroup getPermissionGroup(UUID permissionGroupId) {
         return permissionGroupRepo.findById(permissionGroupId)
-                .orElseThrow(() -> new ApiRequestException(Translator.toLocale(TransitionCode.PERMISSION_GROUP_CODE),
-                        Translator.toLocale(TransitionCode.PERMISSION_GROUP_FIND_BY_ID_NOT_FOUND)));
+                .orElseThrow(() -> new ApiRequestException(ResourceBundleConstant.PMSG_002, getMessageBundle(ResourceBundleConstant.PMSG_002)));
     }
 
     @Override
-    public void addPermission(PermissionRequest request) {
+    public PermissionResponse addPermission(PermissionRequest request) {
         PermissionGroup permissionGroup = getPermissionGroup(request.getPermissionGroupId());
 
-        permissionRepo.save(
+        Permission permission = permissionRepo.save(
                 Permission.builder()
                         .permissionGroup(permissionGroup)
                         .permissionCode(request.getPermissionCode())
                         .isDeleted(SystemConstant.ACTIVE)
                         .build()
         );
+
+        return PermissionResponse.builder()
+                .code(ResourceBundleConstant.PMS_003)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionDtoMapper.apply(permission))
+                .message(getMessageBundle(ResourceBundleConstant.PMS_003))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 
     @Override
-    public void updatePermission(PermissionUpdateRequest request) {
+    public PermissionResponse updatePermission(PermissionUpdateRequest request) {
         PermissionGroup permissionGroup = getPermissionGroup(request.getPermissionGroupId());
 
         Permission permission = getPermission(request.getPermissionId());
@@ -84,34 +91,50 @@ public class PermissionServiceImpl implements IPermissionService {
             permission.setDescription(request.getDescription());
         }
 
-        permissionRepo.save(permission);
+        Permission permissionSave = permissionRepo.save(permission);
+
+        return PermissionResponse.builder()
+                .code(ResourceBundleConstant.PMS_005)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionDtoMapper.apply(permissionSave))
+                .message(getMessageBundle(ResourceBundleConstant.PMS_005))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 
     @Override
-    public void deletePermission(UUID permissionId) {
+    public PermissionResponse deletePermission(UUID permissionId) {
         Permission permission = getPermission(permissionId);
         permission.setIsDeleted(SystemConstant.NO_ACTIVE);
-        permissionRepo.save(permission);
+        Permission permissionSave = permissionRepo.save(permission);
+
+        return PermissionResponse.builder()
+                .code(ResourceBundleConstant.PMS_007)
+                .status(SystemConstant.STATUS_CODE_SUCCESS)
+                .data(permissionDtoMapper.apply(permissionSave))
+                .message(getMessageBundle(ResourceBundleConstant.PMS_007))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
+                .build();
     }
 
     @Override
     public PermissionResponses findAllPermission(Integer currentPage, Integer limitPage) {
-        Pageable pageable = baseAmenity.pageable(currentPage, limitPage);
+        Pageable pageable = baseAmenityUtil.pageable(currentPage, limitPage);
         Page<Permission> all = permissionRepo.findAll(pageable);
 
         List<PermissionDto> permissionDtos = all.stream()
                 .map(permissionDtoMapper)
                 .toList();
 
-        PageableResponse pageableResponse = baseAmenity.pageableResponse(currentPage, limitPage, all.getTotalPages());
+        PageableResponse pageableResponse = baseAmenityUtil.pageableResponse(currentPage, limitPage, all.getTotalPages());
 
         return PermissionResponses.builder()
-                .code(permissionCode)
+                .code(ResourceBundleConstant.PMS_009)
                 .status(SystemConstant.STATUS_CODE_SUCCESS)
                 .data(permissionDtos)
                 .meta(pageableResponse)
-                .message(Translator.toLocale(TransitionCode.PERMISSION_SUCCESS))
-                .responseTime(baseAmenity.currentTimeSeconds())
+                .message(getMessageBundle(ResourceBundleConstant.PMS_009))
+                .responseTime(baseAmenityUtil.currentTimeSeconds())
                 .build();
     }
 }

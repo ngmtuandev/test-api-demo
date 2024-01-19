@@ -5,10 +5,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 @Component
 public class BaseAmenityUtil {
+
+    public String getMessageBundle(String key) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("skeleton");
+        return resourceBundle.getString(key);
+    }
 
     public long currentTimeSeconds() {
         long currentTimeMillis = System.currentTimeMillis();
