@@ -67,7 +67,7 @@ public class RoomServiceImpl implements IRoomService {
                 .name(roomInfoRequest.getName())
                 .description(roomInfoRequest.getDescription())
 //                .status(roomInfoRequest.getStatus())
-                .language(languageCode)
+//                .language(languageCode)
                 .room(room)
                 .build();
     }
@@ -79,6 +79,9 @@ public class RoomServiceImpl implements IRoomService {
     @Override
     public void addRoom(RoomRequest roomRequest) {
         // Create Room entity
+
+        System.out.println("check ->>>" + roomRequest.getQuantityRoom());
+
         Room room = buildRoomEntity(roomRequest);
 
         Room savedRoom = roomRepo.save(room);
@@ -95,6 +98,9 @@ public class RoomServiceImpl implements IRoomService {
                 .collect(Collectors.toList());
 
         roomInfoRepo.saveAll(roomInfoList);
+
+        System.out.println("save ->>> ");
+
     }
 
     @Override

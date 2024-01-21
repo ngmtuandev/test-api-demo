@@ -1,24 +1,21 @@
-package com.bu3.skeleton.entity;
+package com.bu3.skeleton.dto.request.booking;
 
-import jakarta.persistence.*;
+import com.bu3.skeleton.dto.GuestInfoDto;
+import com.bu3.skeleton.entity.BookingDetail;
+import com.bu3.skeleton.entity.Payment;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Table(name = "`booking`")
-@Entity
-public class Booking extends BaseEntity {
-
-
+public class BookingRequest {
     private Integer quantityRoomOrder;
 
     private Integer numberOfNights;
@@ -37,13 +34,10 @@ public class Booking extends BaseEntity {
 
     private String pickUpLocation;
 
-    @ManyToOne
-    @JoinColumn(name = "payment_id", referencedColumnName = "id")
     private Payment payment;
 
-    @OneToMany(mappedBy = "booking")
-    private List<BookingDetail> bookingDetails;
+    private List<GuestInfoDto> guestInfos;
 
-    @OneToMany(mappedBy = "booking")
-    private List<GuestInfo> guestInfos;
+//    private List<BookingDetail> bookingDetails;
+    private List<UUID> idRooms;
 }

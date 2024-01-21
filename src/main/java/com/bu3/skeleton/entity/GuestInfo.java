@@ -42,10 +42,16 @@ public class GuestInfo {
 
     private String email;
 
+    private int age;
+
     private Boolean isDeleted;
 
     @ManyToOne
     @JoinColumn(name = "booking_detail_id")
     private BookingDetail bookingDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
 
 }

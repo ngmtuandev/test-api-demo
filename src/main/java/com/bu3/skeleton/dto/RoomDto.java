@@ -1,7 +1,9 @@
 package com.bu3.skeleton.dto;
 
 import com.bu3.skeleton.entity.Hotel;
+import com.bu3.skeleton.entity.RoomInfo;
 import com.bu3.skeleton.enums.RoomStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class RoomDto {
     private Integer quantityRoom;
 

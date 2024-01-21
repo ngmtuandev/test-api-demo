@@ -31,11 +31,11 @@ public class RoomAdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addRoom(@Valid @RequestBody RoomRequest request, Errors errors) {
+    public ResponseEntity<?> addRoom(@RequestBody RoomRequest request) {
 //        validationService.handleValidate(errors);
         System.out.println("ok");
         roomService.addRoom(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("OK", HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

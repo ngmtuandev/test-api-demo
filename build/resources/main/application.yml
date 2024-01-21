@@ -28,7 +28,7 @@ spring:
           starttls:
             enable: ${EMAIL.ENABLE:true}
   datasource:
-    url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:5432}/${POSTGRES.DATABASE:skeleton}
+    url: jdbc:postgresql://${POSTGRES.HOST:localhost}:${POSTGRES.PORT:8080}/${POSTGRES.DATABASE:demo}
     username: ${POSTGRES.USER:postgres}
     password: ${POSTGRES.PASSWORD:Manhtuan123***}
     hikari:
@@ -39,7 +39,7 @@ spring:
       maximum-pool-size: ${DATASOURCE.MAXIMUM_POOL_SIZE:50}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: ${JPA.SHOW_SQL:true}
+    show-sql: ${JPA.SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: ${FORMAT_SQL:true}

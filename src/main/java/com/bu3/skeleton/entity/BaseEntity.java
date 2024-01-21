@@ -1,10 +1,7 @@
 package com.bu3.skeleton.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedBy;
@@ -20,6 +17,7 @@ import java.util.UUID;
 @Setter
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
+@Data
 @AllArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

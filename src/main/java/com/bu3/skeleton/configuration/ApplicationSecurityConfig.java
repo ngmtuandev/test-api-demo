@@ -39,7 +39,6 @@ public class ApplicationSecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(SystemConstant.API_PUBLIC + "/**").permitAll()
-                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
