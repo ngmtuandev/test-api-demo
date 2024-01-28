@@ -15,7 +15,17 @@ management:
         prometheus: /prometheus/metrics
 
 spring:
+  # Config token
+#  jwt:
+#    secret: ${SECRET.KEY}
+#    expiration: 1800000
+
   # Config mail
+
+  session:
+    store-type: redis
+    timeout: 60s
+
   mail:
     host: ${EMAIL.HOST:smtp.gmail.com}
     port: ${EMAIL.PORT:587}

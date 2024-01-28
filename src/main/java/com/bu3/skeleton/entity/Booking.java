@@ -37,6 +37,8 @@ public class Booking extends BaseEntity {
 
     private String pickUpLocation;
 
+    private boolean isConfirm;
+
     @ManyToOne
     @JoinColumn(name = "payment_id", referencedColumnName = "id")
     private Payment payment;

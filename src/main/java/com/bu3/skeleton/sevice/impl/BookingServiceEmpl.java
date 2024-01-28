@@ -1,5 +1,8 @@
 package com.bu3.skeleton.sevice.impl;
-
+import com.bu3.skeleton.dto.BookingSessionData;
+import jakarta.servlet.http.HttpSession;
+import org.bouncycastle.jcajce.provider.digest.MD2;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.bu3.skeleton.constant.ResourceBundleConstant;
 import com.bu3.skeleton.constant.SystemConstant;
 import com.bu3.skeleton.dto.GuestInfoDto;
@@ -15,9 +18,17 @@ import com.bu3.skeleton.enums.RoomStatus;
 import com.bu3.skeleton.repository.*;
 import com.bu3.skeleton.sevice.IBookingService;
 import com.bu3.skeleton.util.BaseAmenityUtil;
+import com.bu3.skeleton.util.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
+
+
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -42,8 +53,15 @@ public class BookingServiceEmpl implements IBookingService {
 
     private final IRoomRepo roomRepo;
 
+    private final IBookingTokenRepo bookingTokenRepo;
+
     private final BaseAmenityUtil baseAmenityUtil;
 
+    @Autowired
+    JwtProvider jwtProvider;
+
+    @Autowired
+    HttpSession httpSession;
 
 
     private GuestInfo buildGuestInfo(GuestInfoDto guestInfoDto, Booking booking) {
@@ -83,6 +101,11 @@ public class BookingServiceEmpl implements IBookingService {
     int adult;
     int children;
 
+
+    private String generateBookingUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
 
     private Boolean checkConfirmChildren(List<GuestInfoDto> listGuestInfo) {
 
@@ -133,7 +156,7 @@ public class BookingServiceEmpl implements IBookingService {
     }
 
     @Override
-    public BookingResponse createBooking(BookingRequest bookingRequest) {
+    public String createBooking(BookingRequest bookingRequest) {
 
         Booking newBooking = new Booking();
 
@@ -150,7 +173,8 @@ public class BookingServiceEmpl implements IBookingService {
             methodPayment.setAmountPaid(bookingRequest.getPayment().getAmountPaid());
             methodPayment.setDateOfPayment(bookingRequest.getPayment().getDateOfPayment());
 
-            methodPaymentRepo.save(methodPayment);
+            // NOT SAVE
+//            methodPaymentRepo.save(methodPayment);
 
             BookingDetailResponse bookingDetailResponse = new BookingDetailResponse();
 
@@ -160,6 +184,7 @@ public class BookingServiceEmpl implements IBookingService {
                 newBooking.setCustomerMail(bookingRequest.getCustomerMail());
                 newBooking.setCustomerName(bookingRequest.getCustomerName());
                 newBooking.setCustomerPhoneNumber(bookingRequest.getCustomerPhoneNumber());
+                newBooking.setConfirm(false);
                 newBooking.setIsDeleted(false);
 
                 // set Payment for booking
@@ -167,7 +192,8 @@ public class BookingServiceEmpl implements IBookingService {
                 // save basic
                 newBooking.setPayment(methodPayment);
 
-                bookingRepo.save(newBooking);
+// NOT SAVE
+//                Booking newSaveBooking = bookingRepo.save(newBooking);
 
                 if (bookingRequest.getIdRooms() != null && !bookingRequest.getIdRooms().isEmpty()) {
                     List<UUID> idRooms = bookingRequest.getIdRooms();
@@ -199,7 +225,9 @@ public class BookingServiceEmpl implements IBookingService {
                                 .collect(Collectors.toList());
 
 
-                        bookingDetailRepo.saveAll(bookingDetails);
+                        // NOT SAVE
+
+//                        bookingDetailRepo.saveAll(bookingDetails);
                         System.out.println("BookingDetail đã được thêm thành công");
 
                         bookingDetails.stream().forEach(bookingDetailItem -> {
@@ -221,8 +249,8 @@ public class BookingServiceEmpl implements IBookingService {
                                         .collect(Collectors.toList());
 
 
-
-                                guestInfoRepo.saveAll(guestInfos);
+//                                  NOT SAVE
+//                                guestInfoRepo.saveAll(guestInfos);
 //                                bookingDetailResponse.setGuestInfos(guestInfos);
                                 bookingRequest.getIdRooms().stream().forEach(item -> {
                                    Optional<Room> roomBooked = roomRepo.findById(item);
@@ -245,19 +273,47 @@ public class BookingServiceEmpl implements IBookingService {
                                         .build())
                                 .collect(Collectors.toList());
 
+
+
 //                        bookingDetailResponse.setBooking(newBooking);
-                        return BookingResponse.builder()
-                                .code("BK_001")
-                                .status(201)
-                                // roomDtos guestInfoDtos
-                                .data(BookingResponseData.builder()
-                                        .rooms(roomDtos)
-                                        .guestInfos(guestInfoDtos)
-                                        .build()
-                                )
-                                .message("booking successfully")
-                                .responseTime(baseAmenityUtil.currentTimeSeconds())
-                                .build();
+                        String token = jwtProvider.generateToken(newBooking.getCustomerName());
+                        LocalDateTime createdAt = LocalDateTime.now();
+
+
+
+//                        newBooking.setGuestInfos(guestInfoDtos);
+
+
+                        HashMap<String, Object> dataSession = new HashMap<>();
+
+                        BookingSessionData bookingSessionData = new BookingSessionData();
+                        bookingSessionData.setBookingDetails(bookingDetails);
+                        bookingSessionData.setNewBooking(newBooking);
+//                        bookingSessionData.setGuestInfos(guestInfoDtos);
+                        bookingSessionData.setMethodPayment(methodPayment);
+
+                        dataSession.put("bookingSessionData", bookingSessionData);
+                        dataSession.put("token", token);
+
+                        String IDBooking = generateBookingUUID();
+
+                        httpSession.setAttribute(IDBooking, dataSession);
+
+                        return IDBooking;
+
+                        // MAIN !
+//                        return BookingResponse.builder()
+//                                .code("BK_001")
+//                                .status(201)
+//                                // roomDtos guestInfoDtos
+//                                .data(BookingResponseData.builder()
+//                                        .rooms(roomDtos)
+//                                        .guestInfos(guestInfoDtos)
+//                                        .build()
+//                                )
+//                                .message("booking successfully")
+//                                .responseTime(baseAmenityUtil.currentTimeSeconds())
+//                                .build();
 
                     } else {
                         System.out.println("Có id phòng sai");
@@ -271,6 +327,7 @@ public class BookingServiceEmpl implements IBookingService {
 
 
     }
+
 
     @Override
     public BookingResponse getBooking(UUID booking_id) {
@@ -322,4 +379,31 @@ public class BookingServiceEmpl implements IBookingService {
     return null;
     }
 
+    @Override
+    public String confirmBooking(String tokenID) {
+
+        HashMap<String, Object> sessionData = (HashMap<String, Object>) httpSession.getAttribute(tokenID);
+
+
+        String token = (String) sessionData.get("token");
+        System.out.println("token ->>>>>" + token);
+        BookingSessionData booking = (BookingSessionData) sessionData.get("bookingSessionData");
+
+        boolean checkExpireToken = jwtProvider.validateToken(token);
+
+        List<BookingDetail> bookingDetailsSession = booking.getBookingDetails();
+        List<GuestInfo> guestInfoListSession = booking.getGuestInfos();
+        if (checkExpireToken) {
+            System.out.println("token con han");
+            bookingRepo.save(booking.getNewBooking());
+            bookingDetailRepo.saveAll(bookingDetailsSession);
+            methodPaymentRepo.save(booking.getMethodPayment());
+            httpSession.removeAttribute(tokenID);
+//            guestInfoRepo.saveAll(guestInfoListSession);
+            return "success";
+        }
+
+        httpSession.removeAttribute(tokenID);
+        return "failure";
+    }
 }
